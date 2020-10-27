@@ -10,7 +10,7 @@ O jogo a ser desenvolvido será o _Three Dragons_. Trabalho realizado por:
 
 ## O jogo: _Three Dragons_
 
-O jogo _Three Dragons_é parecido com vários jogos de captura antigos, tal como Tablut. Contudo, tem dois aspetos adicionais como variantes avançadas do jogo:
+O jogo _Three Dragons_ é parecido com vários jogos de captura antigos, tal como Tablut. Contudo, tem dois aspetos adicionais como variantes avançadas do jogo:
 
 1.  As peças têm um valor numérico associado - nível, tal que apenas uma peça mais forte consegue capturar uma mais fraca.
 2.  Existem três Cavernas de Dragão no tabuleiro, que permitem que os jogadores obtenham peças mais fortes.
