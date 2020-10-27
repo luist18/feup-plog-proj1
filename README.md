@@ -24,7 +24,7 @@ O jogo _Three Dragons_ é parecido com vários jogos de captura antigos, tal com
 - Com a "Captura Normal", é possível capturar mais que uma peça.
 - Com a "Captura por Nível", apenas é possível capturar uma peça.
 - Movimentar uma peça para uma casa adjacente a uma peça adversária de nível mais alto não resulta na captura da peça por parte do adversário.
-- Após uma captura, o nível da peça é decrementado unitariamente.
+- Após uma "Captura por Nível", o nível da peça é decrementado unitariamente.
 
 ## Representação interna do estado de jogo
 
