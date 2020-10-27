@@ -4,7 +4,8 @@
 O jogo a ser desenvolvido será o _Three Dragons_. Trabalho realizado por:
 
 - Fábio Miliano Prinsloo Moreira (up201806296)
-- José Luís Sousa Tavares (up201809679)
+- José Luís Sousa Tavares (up201809679)  
+
 (Turma 2 - _ThreeDragons_5_)
 
 ## O jogo: _Three Dragons_
