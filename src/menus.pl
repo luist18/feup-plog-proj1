@@ -1,3 +1,5 @@
+:- consult('board.pl').
+:- consult('util.pl').
 play :- mainMenu.
 
 mainMenu :-
@@ -15,7 +17,7 @@ mainMenu :-
     menuOption(Input).
 
 
-menuOption('1') :- printInitialBoard.
+menuOption('1') :- initialBoard(X), displayBoard(X).
 menuOption('2') :- credits.
 menuOption('3').
 menuOption('4') :- 
