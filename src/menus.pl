@@ -1,7 +1,3 @@
-:- consult('board.pl').
-:- consult('util.pl').
-play :- mainMenu.
-
 mainMenu :-
 	write('================================='), nl,
 	write('=         THREE DRAGONS         ='), nl,
@@ -17,7 +13,14 @@ mainMenu :-
     menuOption(Input).
 
 
-menuOption('1') :- initialBoard(X), displayBoard(X).
+menuOption('1') :- 
+	
+	initial(GameState), 
+	displayBoard(GameState),
+	gameLoop('White', 'Black').
+	
+
+
 menuOption('2') :- credits.
 menuOption('3').
 menuOption('4') :- 
@@ -36,4 +39,7 @@ credits :-
 	write('=                               ='), nl,
 	write('================================='), nl.
   
+
+
+  initial(GameState) :- initialBoard(GameState).
 

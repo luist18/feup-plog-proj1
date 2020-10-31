@@ -16,6 +16,10 @@ initialBoard( [[mountain,black,black,black,black,black,black,black,mountain],
 [mountain,white,white,white,white,white,white,white,mountain]
 ]).
 
+
+
+
+
 translate(empty, S)       :- S='    '.
 translate(black, S)       :- S=' B  '.
 translate(white, S)       :- S=' W  '.
@@ -27,19 +31,22 @@ translate(blackDragon, S) :- S=' BD '.
 displayBoard(X) :-
     printColumnsRow,
     printSeparator,
-    printMatrix(X,1).
+    printMatrix(X,1),
+    printColumnsRow. %This one is never called, so something is failing at the end of printMatrix
 
 printMatrix([]).
 
 
 printMatrix([Head | Tail], N) :-
-    N < 10, 
+    N < 10,  
     write(N),
     write('|'),
     printList(Head),
     printSeparator,
     N1 is N+1, 
     printMatrix(Tail, N1).
+
+
 
 printList([]) :- nl.
 
