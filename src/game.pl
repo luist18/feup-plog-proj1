@@ -11,13 +11,15 @@ gameLoop(Board, Player1, Player2) :-
 
 playerTurn(Board, UpdatedBoard, Player):-
     (Player=='White', write('WHITE CHOOSING TURN\n') ; Player=='Black', write('BLACK CHOOSING PLAY\n')),
-    write('Moving element. Row?'),
-    readChar(Old_Row),
-    write('Column?'),
-    readChar(Old_Column),
-    replaceElement(Old_Row, Old_Column, empty, Board, WhiteBoard),
-    write('Moving element to final position. Row?'),
-    readChar(New_Row),
-    write('Column?'),
-    readChar(New_Column),
-    replaceElement(New_Row, New_Column, white, WhiteBoard, UpdatedBoard).
+    write('Choose element to move\n'),
+    manageRow(Old_Row),
+    manageColumn(Old_Column),
+    replaceElement(Old_Row-1, Old_Column-1, empty, Board, SecondBoard),
+    write('Moving element to final position.\n'),
+    manageRow(New_Row),
+    manageColumn(New_Column),
+    (Player=='White', replaceElement(New_Row-1, New_Column-1, white, SecondBoard, UpdatedBoard)) ; (Player=='Black', replaceElement(New_Row-1, New_Column-1, black, SecondBoard, UpdatedBoard)).
+
+
+
+
