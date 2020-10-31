@@ -17,7 +17,7 @@ menuOption('1') :-
 	
 	initial(GameState), 
 	displayBoard(GameState),
-	gameLoop('White', 'Black').
+	gameLoop(GameState, 'White', 'Black').
 	
 
 

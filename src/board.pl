@@ -4,21 +4,17 @@ printColumnsRow :-
 printSeparator:-
     write('_______________________________________________'),nl.
 
-
-initialBoard( [[mountain,black,black,black,black,black,black,black,mountain],
-[empty,empty,empty,empty,black,empty,empty,empty,empty],
-[empty,empty,empty,empty,empty,empty,empty,empty,empty],
-[empty,empty,empty,empty,empty,empty,empty,empty,empty],
-[cave,empty,empty,empty,cave,empty,empty,empty,cave],
-[empty,empty,empty,empty,empty,empty,empty,empty,empty],
-[empty,empty,empty,empty,empty,empty,empty,empty,empty],
-[empty,empty,empty,empty,white,empty,empty,empty,empty],
-[mountain,white,white,white,white,white,white,white,mountain]
+initialBoard( [
+    [mountain,black,black,black,black,black,black,black,mountain],
+    [empty,empty,empty,empty,black,empty,empty,empty,empty],
+    [empty,empty,empty,empty,empty,empty,empty,empty,empty],
+    [empty,empty,empty,empty,empty,empty,empty,empty,empty],
+    [cave,empty,empty,empty,cave,empty,empty,empty,cave],
+    [empty,empty,empty,empty,empty,empty,empty,empty,empty],
+    [empty,empty,empty,empty,empty,empty,empty,empty,empty],
+    [empty,empty,empty,empty,white,empty,empty,empty,empty],
+    [mountain,white,white,white,white,white,white,white,mountain]
 ]).
-
-
-
-
 
 translate(empty, S)       :- S='    '.
 translate(black, S)       :- S=' B  '.
@@ -31,11 +27,16 @@ translate(blackDragon, S) :- S=' BD '.
 displayBoard(X) :-
     printColumnsRow,
     printSeparator,
-    printMatrix(X,1),
-    printColumnsRow. %This one is never called, so something is failing at the end of printMatrix
+    printMatrix(X,1).
 
 printMatrix([]).
 
+
+printMatrix([Head | []], N) :-
+    write(N),
+    write('|'),
+    printList(Head),
+    printSeparator.
 
 printMatrix([Head | Tail], N) :-
     N < 10,  
