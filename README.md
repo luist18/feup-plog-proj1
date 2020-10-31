@@ -1,31 +1,45 @@
-# Projeto de PLOG
-## Identificação
+# feup-plog-proj1
 
-O jogo a ser desenvolvido será o _Three Dragons_. Trabalho realizado por:
+## Class 2 T2_Three_Dragons_5
 
-- Fábio Miliano Prinsloo Moreira (up201806296)
-- José Luís Sousa Tavares (up201809679)  
+- Fábio Moreira ([up201806296](mailto:up201806296@fe.up.pt))
+- Luís Tavares ([up201809679](mailto:up201809679@fe.up.pt))  
 
-(Turma 2 - _ThreeDragons_5_)
+## The game: _Three Dragons_
 
-## O jogo: _Three Dragons_
+[_Three Dragons_](https://boardgamegeek.com/boardgame/306972/three-dragons) is a 2-player board game, created by [Scott Allen Czysz](https://drive.google.com/drive/folders/1xNoHSM08SChVW2TWtzU8Qje6m7hxrEYh), a board game designer. The game is inspired by ancient custodial capture board games, such as Tablut, with some differences:
 
-O jogo _Three Dragons_ é parecido com vários jogos de captura antigos, tal como Tablut. Contudo, tem dois aspetos adicionais como variantes avançadas do jogo:
+1. The pieces have a related strength value. Only a stronger piece can capture a weaker piece;
+2. There are three dragon caves in the board which allow players to get stronger pieces.
 
-1.  As peças têm um valor numérico associado - nível, tal que apenas uma peça mais forte consegue capturar uma mais fraca.
-2.  Existem três Cavernas de Dragão no tabuleiro, que permitem que os jogadores obtenham peças mais fortes.
+The latest version of the game is v0.40 released in 19th February 2020. The official Google Drive folder of the creator can be [accessed here](https://drive.google.com/drive/folders/1xNoHSM08SChVW2TWtzU8Qje6m7hxrEYh).
 
-- As peças podem percorrer o tabuleiro tanto na horizontal como na vertical.
-- Uma captura normal ocorre quando uma peça for deslocada para uma casa adjacente à peça adversária tal que do outro lado exista uma outra peça do jogador.
-- O vencedor é declarado quando o adversário estiver reduzido a uma só peça. 
-- Apenas são possíveis obter 3 dragões (1 de cada caverna), sendo que para tal acontecer, um jogador precisa de ter peças suas a rodear a caverna. Quando um jogador obtiver um dragão, esta peça é jogada como uma peça normal.
-- A captura de uma peça pode também acontecer quando o jogar deslocar uma peça para a casa adjacente a uma peça do adversário de nível inferior.
-- O jogador pode decidir entre a "Captura Normal" e "Captura por Nível".
-- Com a "Captura Normal", é possível capturar mais que uma peça.
-- Com a "Captura por Nível", apenas é possível capturar uma peça.
-- Movimentar uma peça para uma casa adjacente a uma peça adversária de nível mais alto não resulta na captura da peça por parte do adversário.
-- Após uma "Captura por Nível", o nível da peça é decrementado unitariamente.
+### The board
 
-## Representação interna do estado de jogo
+The board consists a 9x9 square board with a mountain at each corner, three dragon caves in the middle row spaced with three squares, 8 white dices and 8 black dices (or any arbitrary color).
 
-## Visualização do estado de jogo
+![initial-board](documentation/board.png)
+
+### Gameplay
+
+#### Gameflow
+
+1. White move first.
+2. At each turn the player must move on piece orthogonally any number of squares. Pieces may not overlap any mountain, dragon cave or game pieces.
+3. A capture occurs when a player surrounds an opponent's piece on two opposite sides, or one player piece and a mountain or dragon cave. The enemy piece is removed.
+4. The winner is declared when the opponent is reduced to only one piece.
+
+
+#### Variants
+
+1. Capture by strength: occurs when the player move their piece to the side of a opponent's weaker piece. The opponent's piece is removed and the player's piece is weakened by 1 level.
+2. Surrounding a dragon cave results in obtaining an extra playing piece (**summoning a dragon**). The side caves adds an extra 3 level piece to the player and the center cave an extra 5 level piece. 
+
+#### Gameplay notes
+
+1. If a player moves their piece between two opponent pieces the piece **is not captured**.
+2. It is only possible to obtain 3 dragons (1 for each cave).
+3. The player can decide by a 'normal capture' or 'level capture'.
+4. A player can capture multiple pieces with 'normal capture' but only one with 'level capture'.
+
+## Game representation
