@@ -46,8 +46,6 @@ printMatrix([Head | Tail], N) :-
     N1 is N+1, 
     printMatrix(Tail, N1).
 
-
-
 printList([]) :- nl.
 
 printList([Head|Tail]) :- 
