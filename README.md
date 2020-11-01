@@ -46,13 +46,13 @@ The board consists a 9x9 square board with a mountain at each corner, three drag
 
 #### Initial State
 
-<img src="documentation/board.png" width="300" height="300" /> &nbsp; &nbsp; &nbsp; <img src="documentation/initialState.png" width="447" height="300" />  &nbsp; &nbsp; &nbsp; <img src="documentation/initialCode.png" width="447" height="300" />
+<img src="documentation/board.png" width="200" height="200" />&nbsp;<img src="documentation/initialState.png" width="300" height="200" />&nbsp;<img src="documentation/initialCode.png" width="400" height="200" />
   
 #### Middle State
-<img src="documentation/middle.png" width="300" height="300" /> &nbsp; &nbsp; &nbsp; <img src="documentation/middleState.png" width="447" height="300" />  
+<img src="documentation/middle.png" width="200" height="200" />&nbsp;<img src="documentation/middleState.png" width="300" height="200" />&nbsp;<img src="documentation/middleCode.png" width="400" height="200" />  
   
 #### Final State
-<img src="documentation/final.png" width="300" height="300" /> &nbsp; &nbsp; &nbsp; <img src="documentation/finalState.png" width="447" height="300" />
+<img src="documentation/final.png" width="200" height="200" />&nbsp;<img src="documentation/finalState.png" width="300" height="200" />&nbsp;<img src="documentation/finalCode.png" width="400" height="200" />
 
 
 ## Board visualization
