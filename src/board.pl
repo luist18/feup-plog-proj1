@@ -5,20 +5,54 @@ printSeparator:-
     write('_______________________________________________'),nl.
 
 initialBoard( [
-    [mountain,black,black,black,black,black,black,black,mountain],
-    [empty,empty,empty,empty,black,empty,empty,empty,empty],
+    [mountain,black3,black2,black2,black2,black2,black2,black3,mountain],
+    [empty,empty,empty,empty,black4,empty,empty,empty,empty],
     [empty,empty,empty,empty,empty,empty,empty,empty,empty],
     [empty,empty,empty,empty,empty,empty,empty,empty,empty],
     [cave,empty,empty,empty,cave,empty,empty,empty,cave],
     [empty,empty,empty,empty,empty,empty,empty,empty,empty],
     [empty,empty,empty,empty,empty,empty,empty,empty,empty],
-    [empty,empty,empty,empty,white,empty,empty,empty,empty],
-    [mountain,white,white,white,white,white,white,white,mountain]
+    [empty,empty,empty,empty,white4,empty,empty,empty,empty],
+    [mountain,white3,white2,white2,white2,white2,white2,white3,mountain]
 ]).
 
-translate(empty, S)       :- S='    '.
-translate(black, S)       :- S=' B  '.
-translate(white, S)       :- S=' W  '.
+middleBoard( [
+    [mountain,empty,empty,black2,black2,empty,empty,black3,mountain],
+    [empty,empty,empty,empty,empty,empty,empty,empty,empty],
+    [empty,empty,empty,empty,empty,empty,empty,empty,empty],
+    [empty,empty,empty,black2,black4,empty,empty,white2,empty],
+    [cave,empty,empty,empty,cave,black2,white2,empty,cave],
+    [empty,white2,empty,empty,empty,empty,empty,white2,empty],
+    [empty,empty,empty,empty,empty,empty,empty,empty,empty],
+    [empty,empty,empty,empty,white4,empty,empty,empty,empty],
+    [mountain,empty,white2,empty,empty,empty,empty,empty,mountain]
+]).
+
+finalBoard( [
+    [mountain,empty,empty,empty,black2,empty,empty,empty,mountain],
+    [empty,empty,empty,empty,empty,empty,empty,empty,empty],
+    [empty,empty,empty,empty,empty,empty,empty,empty,empty],
+    [empty,empty,empty,empty,empty,empty,empty,empty,empty],
+    [cave,empty,empty,empty,cave,empty,empty,empty,cave],
+    [empty,empty,empty,black3,empty,black2,empty,empty,empty],
+    [empty,empty,empty,empty,empty,empty,empty,empty,empty],
+    [empty,empty,empty,empty,empty,white3,empty,empty,empty],
+    [mountain,empty,empty,empty,empty,empty,empty,empty,mountain]
+]).
+
+translate(empty, S)        :- S='    '.
+translate(black2, S)       :- S=' B2 '.
+translate(black3, S)       :- S=' B3 '.
+translate(black4, S)       :- S=' B4 '.
+translate(black5, S)       :- S=' B5 '.
+
+
+translate(white2, S)       :- S=' W2 '.
+translate(white3, S)       :- S=' W3 '.
+translate(white4, S)       :- S=' W4 '.
+translate(white5, S)       :- S=' W5 '.
+
+
 translate(mountain, S)    :- S=' M  '.
 translate(cave, S)        :- S=' C  '.
 translate(whiteDragon, S) :- S=' WD '.

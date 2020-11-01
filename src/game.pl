@@ -1,9 +1,8 @@
 gameLoop(Board, Player1, Player2) :-
     /* Ask for move for Player 1 */
-    write(Player1), write(' turn\n'),
     playerTurn(Board,UpdatedBoard, Player1),
     displayBoard(UpdatedBoard),
-    write(Player2), write(' turn\n'),
+
     playerTurn(UpdatedBoard, FinalBoard, Player2),
     displayBoard(FinalBoard).
     /*Add call to gameLoop(FinalBoard, Player1, Player2)
@@ -12,7 +11,7 @@ gameLoop(Board, Player1, Player2) :-
 
 
 playerTurn(Board, UpdatedBoard, Player):-
-    (Player=='White', write('WHITE CHOOSING TURN\n') ; Player=='Black', write('BLACK CHOOSING PLAY\n')),
+    (Player=='White', write('White turn\n') ; Player=='Black', write('Black turn\n')),
     write('Choose element to move\n'),
     /* Getting position of piece to move */
     manageRow(Old_Row),
