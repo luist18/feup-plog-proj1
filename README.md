@@ -58,16 +58,18 @@ The board consists a 9x9 square board with a mountain at each corner, three drag
 ## Board visualization
 
 Since our board is represented as a list of lists of atoms, we use the predicate _translate_ to print out the various elements (few examples provided below):  
-&nbsp;&nbsp;&nbsp;&nbsp;:- translate(+Atom, -Translated).
-&nbsp;&nbsp;&nbsp;&nbsp;translate(empty, S) :- S='    '.
-&nbsp;&nbsp;&nbsp;&nbsp;translate(black2,S) :- S=' B2 '.
+
+&nbsp;&nbsp;&nbsp;&nbsp;:- translate(+Atom, -Translated).  
+&nbsp;&nbsp;&nbsp;&nbsp;translate(empty, S) :- S='    '.  
+&nbsp;&nbsp;&nbsp;&nbsp;translate(black2,S) :- S=' B2 '.  
 &nbsp;&nbsp;&nbsp;&nbsp;translate(white3, S)       :- S=' W3 '.  
 &nbsp;&nbsp;&nbsp;&nbsp;translate(mountain, S)     :- S=' M  '.  
-&nbsp;&nbsp;&nbsp;&nbsp;translate(cave, S)         :- S=' C  '. 
+&nbsp;&nbsp;&nbsp;&nbsp;translate(cave, S)         :- S=' C  '.  
+  
 
 In order to display the board, we use the predicate _displayBoard_, which will in turn, make calls to the predicates _printMatrix_ and _printList._
 
-&nbsp;&nbsp;&nbsp;&nbsp;:- displayBoard(+Board).
+&nbsp;&nbsp;&nbsp;&nbsp;:- displayBoard(+Board).  
 &nbsp;&nbsp;&nbsp;&nbsp;displayBoard(X) :-
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printColumnsRow,
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printSeparator,
