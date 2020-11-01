@@ -1,9 +1,3 @@
-printColumnsRow :- 
-    write(' | A  | B  | C  | D  | E  | F  | G  | H  | I  |'), nl.
-
-printSeparator:-
-    write('_______________________________________________'),nl.
-
 initialBoard( [
     [mountain,black3,black2,black2,black2,black2,black2,black3,mountain],
     [empty,empty,empty,empty,black4,empty,empty,empty,empty],
@@ -41,34 +35,33 @@ finalBoard( [
 ]).
 
 translate(empty, S)        :- S='    '.
+translate(black1, S)       :- S=' B1 '.
 translate(black2, S)       :- S=' B2 '.
 translate(black3, S)       :- S=' B3 '.
 translate(black4, S)       :- S=' B4 '.
 translate(black5, S)       :- S=' B5 '.
+translate(white1, S)       :- S=' W1 '.
 translate(white2, S)       :- S=' W2 '.
 translate(white3, S)       :- S=' W3 '.
 translate(white4, S)       :- S=' W4 '.
 translate(white5, S)       :- S=' W5 '.
-translate(mountain, S)    :- S=' M  '.
-translate(cave, S)        :- S=' C  '.
-translate(whiteDragon, S) :- S=' WD '.
-translate(blackDragon, S) :- S=' BD '.
+translate(mountain, S)     :- S=' M  '.
+translate(cave, S)         :- S=' C  '.
+
+printColumnsRow :- 
+    write(' | A  | B  | C  | D  | E  | F  | G  | H  | I  |'), nl.
+
+printSeparator:-
+    write('_______________________________________________'),nl.
 
 displayBoard(X) :-
     printColumnsRow,
     printSeparator,
     printMatrix(X,1).
 
-printMatrix([]).
-
-printMatrix([Head | []], N) :-
-    write(N),
-    write('|'),
-    printList(Head),
-    printSeparator.
+printMatrix([], _N).
 
 printMatrix([Head | Tail], N) :-
-    N < 10,  
     write(N),
     write('|'),
     printList(Head),
