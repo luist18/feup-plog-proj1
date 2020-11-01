@@ -45,14 +45,10 @@ translate(black2, S)       :- S=' B2 '.
 translate(black3, S)       :- S=' B3 '.
 translate(black4, S)       :- S=' B4 '.
 translate(black5, S)       :- S=' B5 '.
-
-
 translate(white2, S)       :- S=' W2 '.
 translate(white3, S)       :- S=' W3 '.
 translate(white4, S)       :- S=' W4 '.
 translate(white5, S)       :- S=' W5 '.
-
-
 translate(mountain, S)    :- S=' M  '.
 translate(cave, S)        :- S=' C  '.
 translate(whiteDragon, S) :- S=' WD '.
@@ -64,7 +60,6 @@ displayBoard(X) :-
     printMatrix(X,1).
 
 printMatrix([]).
-
 
 printMatrix([Head | []], N) :-
     write(N),
