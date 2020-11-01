@@ -25,7 +25,7 @@ The board consists a 9x9 square board with a mountain at each corner, three drag
 #### Gameflow
 
 1. White move first.
-2. At each turn the player must move on piece orthogonally any number of squares. Pieces may not overlap any mountain, dragon cave or game pieces.
+2. At each turn the player must move a piece orthogonally any number of squares. Pieces may not overlap any mountain, dragon cave or game pieces.
 3. A capture occurs when a player surrounds an opponent's piece on two opposite sides, or one player piece and a mountain or dragon cave. The enemy piece is removed.
 4. The winner is declared when the opponent is reduced to only one piece.
 
@@ -39,7 +39,7 @@ The board consists a 9x9 square board with a mountain at each corner, three drag
 
 1. If a player moves their piece between two opponent pieces the piece **is not captured**.
 2. It is only possible to obtain 3 dragons (1 for each cave).
-3. The player can decide by a 'normal capture' or 'level capture'.
+3. The player can decide between a 'normal capture' or 'level capture'.
 4. A player can capture multiple pieces with 'normal capture' but only one with 'level capture'.
 
 ## Game representation
