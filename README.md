@@ -75,7 +75,7 @@ In order to display the board, we use the predicate _displayBoard_, which will i
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printSeparator,  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printMatrix(X,1).  
 
-&nbsp;&nbsp;&nbsp;&nbsp;& :- printMatrix(+Matrix, +N)  
+&nbsp;&nbsp;&nbsp;&nbsp;% :- printMatrix(+Matrix, +N)  
 &nbsp;&nbsp;&nbsp;&nbsp;printMatrix([], _N).  
 &nbsp;&nbsp;&nbsp;&nbsp;printMatrix([Head | Tail], N) :-  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;write(N),  
