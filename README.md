@@ -59,23 +59,23 @@ The board consists a 9x9 square board with a mountain at each corner, three drag
 
 Since our board is represented as a list of lists of atoms, we use the predicate _translate_ to print out the various elements (few examples provided below):  
 
-&nbsp;&nbsp;&nbsp;&nbsp;:- translate(+Atom, -Translated).  
-&nbsp;&nbsp;&nbsp;&nbsp;translate(empty, S) :- S='    '. -> Empty cell  
-&nbsp;&nbsp;&nbsp;&nbsp;translate(black2,S) :- S=' B2 '.  -> Black piece with relative strength of 2  
-&nbsp;&nbsp;&nbsp;&nbsp;translate(white3, S)       :- S=' W3 '.  -> White piece with relative strength of 3  
-&nbsp;&nbsp;&nbsp;&nbsp;translate(mountain, S)     :- S=' M  '.  -> Mountain  
-&nbsp;&nbsp;&nbsp;&nbsp;translate(cave, S)         :- S=' C  '.  -> Cave  
+&nbsp;&nbsp;&nbsp;&nbsp;% :- translate(+Atom, -Translated).  
+&nbsp;&nbsp;&nbsp;&nbsp;translate(empty, S) :- S='    '. % Empty cell  
+&nbsp;&nbsp;&nbsp;&nbsp;translate(black2,S) :- S=' B2 '.  % Black piece with relative strength of 2  
+&nbsp;&nbsp;&nbsp;&nbsp;translate(white3, S)       :- S=' W3 '.  % White piece with relative strength of 3  
+&nbsp;&nbsp;&nbsp;&nbsp;translate(mountain, S)     :- S=' M  '.  % Mountain  
+&nbsp;&nbsp;&nbsp;&nbsp;translate(cave, S)         :- S=' C  '.  % Cave  
   
 
 In order to display the board, we use the predicate _displayBoard_, which will in turn, make calls to the predicates _printMatrix_ and _printList._  
 
-&nbsp;&nbsp;&nbsp;&nbsp;:- displayBoard(+Board).  
+&nbsp;&nbsp;&nbsp;&nbsp;% :- displayBoard(+Board).  
 &nbsp;&nbsp;&nbsp;&nbsp;displayBoard(X) :-  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printColumnsRow,  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printSeparator,  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printMatrix(X,1).  
 
-&nbsp;&nbsp;&nbsp;&nbsp;:- printMatrix(+Matrix, +N)  
+&nbsp;&nbsp;&nbsp;&nbsp;& :- printMatrix(+Matrix, +N)  
 &nbsp;&nbsp;&nbsp;&nbsp;printMatrix([], _N).  
 &nbsp;&nbsp;&nbsp;&nbsp;printMatrix([Head | Tail], N) :-  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;write(N),  
@@ -85,7 +85,7 @@ In order to display the board, we use the predicate _displayBoard_, which will i
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;N1 is N+1,  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;printMatrix(Tail, N1).  
 
-&nbsp;&nbsp;&nbsp;&nbsp;:- printList(+List).  
+&nbsp;&nbsp;&nbsp;&nbsp;% :- printList(+List).  
 &nbsp;&nbsp;&nbsp;&nbsp;printList([]) :- nl.  
 &nbsp;&nbsp;&nbsp;&nbsp;printList([Head|Tail]) :-  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;translate(Head, X),  
