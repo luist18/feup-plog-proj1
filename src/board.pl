@@ -70,7 +70,6 @@ printMatrix([Head | Tail], N) :-
     printMatrix(Tail, N1).
 
 printList([]) :- nl.
-
 printList([Head|Tail]) :- 
     translate(Head, X),
     write(X), 
