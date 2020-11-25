@@ -55,7 +55,7 @@ playerTurn(Player, Board, NextPlayer, UpdatedBoard) :-
         manageColumn(Old_Column),
 
         /* Extracting the element that is to be moved for analysis */
-        extractElement(Real_Old_Row, Real_Old_Column, Board, Element),
+        extractElement(Old_Row, Old_Column, Board, Element),
         isPieceSelectable(Element, Player), !,
 
     /* Getting the final position */
@@ -63,8 +63,8 @@ playerTurn(Player, Board, NextPlayer, UpdatedBoard) :-
         manageRow(New_Row),
         manageColumn(New_Column), !,
     
-    replaceElement(Real_Old_Row, Real_Old_Column, empty, Board, SecondBoard),
-    replaceElement(Real_New_Row, Real_New_Column, Element, SecondBoard, UpdatedBoard),
+    replaceElement(Old_Row, Old_Column, empty, Board, SecondBoard),
+    replaceElement(New_Row, New_Column, Element, SecondBoard, UpdatedBoard),
     NextPlayer is ((Player rem 2) +1 ). /* Player will either be 1 or 2, depending on current Player.*/
 
 

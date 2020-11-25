@@ -15,7 +15,7 @@ readChar(Input) :-
 manageRow(Old_Row) :-
     write('Row?'),
     readChar(Row),
-    convert_char_to_int(Row, Row_tmp)
+    convert_char_to_int(Row, Row_tmp),
     Old_Row is Row_tmp-1. /*If row ==1, index in the list is 1-1=0 */
 
 /*
