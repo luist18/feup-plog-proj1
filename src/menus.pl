@@ -13,13 +13,7 @@ mainMenu :-
     menuOption(Input).
 
 
-menuOption('1') :- 
-	
-	initial(GameState), 
-	gameLoop(GameState, 'White', 'Black').
-	
-
-
+menuOption('1') :- gameLoop.
 menuOption('2') :- credits.
 menuOption('3').
 menuOption('4') :- 
@@ -28,17 +22,17 @@ menuOption('4') :-
 
 
 credits :-
-    write('================================='), nl,
+  write('================================='), nl,
 	write('=         THREE DRAGONS         ='), nl,
 	write('================================='), nl,
 	write('=                               ='), nl,
 	write('= Game developed by:            ='), nl,
-    write('= Fabio Moreira                 ='), nl,
-    write('= Luis Tavares                  ='), nl,
+  write('= Fabio Moreira                 ='), nl,
+  write('= Luis Tavares                  ='), nl,
 	write('=                               ='), nl,
 	write('================================='), nl.
   
 
 
-  initial(GameState) :- initialBoard(GameState).
+initial(GameState) :- initialBoard(GameState).
 

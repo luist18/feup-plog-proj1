@@ -1,41 +1,75 @@
-gameLoop(Board, Player1, Player2) :-
-    /* Ask for move for Player 1 */
-    displayGame(Board, Player1),
-    playerTurn(Board,UpdatedBoard, Player1),
-    displayGame(UpdatedBoard, Player2),
-    playerTurn(UpdatedBoard, FinalBoard, Player2),
-    gameLoop(FinalBoard, Player1, Player2).
-    /*It will run indefinitely as we have no set end condition yet.*/
+gameLoop :-
+    initialBoard(InitialBoard),
+    assert(state(1, InitialBoard)),
+    repeat,
+        retract(state(Player, CurrentBoard)),
+        displayBoard(CurrentBoard),
+        playerTurn(Player, CurrentBoard, NextPlayer, NextBoard),
+        assert(state(NextPlayer, NextBoard)),
+        endOfGame(2), !,
+    showResult.
 
-displayGame(GameState, Player) :-
-    displayBoard(GameState),
-    (Player=='White', write('White turn\n') ; Player=='Black', write('Black turn\n')).
+
+%Purposely failing. This function will be responsible for checking the end condition of the game.
+endOfGame(N) :-
+    N > 10, write('End game'), nl.
+
+showResult :- 
+    nl, write('GAME FINISHED').
+
+
+% This function will extract the element from Board, specifying the Row and Column
+% :- extractElement(+Row, +Column, +Board, -Element)
+extractElement(Row, Column, Board, Element) :-
+    findnth(Row, Board, ExtractedRow),
+    findnth(Column, ExtractedRow, Element).
+
+
+
+/*
+    Checks if Player (1 - White, 2 - Black) can choose the selected piece
+*/
+isPieceSelectable(Piece,Player) :-
+    Piece \= mountain, Piece \= empty, Piece \= cave, 
+    (Player == 1, Piece \= black1, Piece \= black2, Piece \= black3, Piece \= black4, Piece \= black5) ; 
+    (Player == 2, Piece \= white1, Piece \= white1, Piece \= white1, Piece \= white1, Piece \= white1).
     
 
-playerTurn(Board, UpdatedBoard, _Player):-
+
     
-    write('Choose element to move\n'),
+/**
+ @brief: Manage the player's turn, by asking which element to move and where to.
+ TODO: Must check if play is valid, aka moving orthogonally, not going over any pieces, not landing on an occupied cell. 
+*/
+playerTurn(Player, Board, NextPlayer, UpdatedBoard) :-
+    write('Player:'), write(Player), nl,
+    
     /* Getting position of piece to move */
-    manageRow(Old_Row),
-    manageColumn(Old_Column),
-    Real_Old_Row is Old_Row-1, /*If row ==1, index in the list is 1-1=0 */
-    Real_Old_Column is Old_Column-1,
+    repeat,
+        write('Choose element to move\n'),
+        manageRow(Old_Row),
+        manageColumn(Old_Column),
+        
+        /* TODO: Real_old_row is Old_row -1 might be done inside the manageRow and ManageColumn */
+        Real_Old_Row is Old_Row-1, /*If row ==1, index in the list is 1-1=0 */
+        Real_Old_Column is Old_Column-1,
+        /* Extracting the element that is to be moved for analysis */
+        extractElement(Real_Old_Row, Real_Old_Column, Board, Element),
+        isPieceSelectable(Element, Player), !,
 
-    /* Extracting the element that is to be moved for analysis */
-    findnth(Real_Old_Row, Board, ExtractedRow),
-    findnth(Real_Old_Column, ExtractedRow, Element),
-    
     /* Getting the final position */
-    write('Moving element to final position.\n'),
-    manageRow(New_Row),
-    manageColumn(New_Column),
+    
+    repeat,
+        manageRow(New_Row),
+        manageColumn(New_Column), !,
+        
+
     Real_New_Row is New_Row-1,
     Real_New_Column is New_Column-1,
+
     replaceElement(Real_Old_Row, Real_Old_Column, empty, Board, SecondBoard),
-    replaceElement(Real_New_Row, Real_New_Column, Element, SecondBoard, UpdatedBoard).
+    replaceElement(Real_New_Row, Real_New_Column, Element, SecondBoard, UpdatedBoard),
+
+    NextPlayer is ((Player rem 2) +1 ).
 
 
-
-
-checkIfPieceIsSelectable(Player, Element, X) :-
-    (Player =='White', (Element==white, X = 1 ; X = -1) ; Player=='Black', (Element==black, X = 1 ; X = -1)).
