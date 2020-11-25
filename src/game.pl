@@ -10,7 +10,9 @@ gameLoop :-
     showResult.
 
 
-%Purposely failing. This function will be responsible for checking the end condition of the game.
+/*
+    Purposely failing. This function will be responsible for checking the end condition of the game.
+*/
 endOfGame(N) :-
     N > 10, write('End game'), nl.
 
@@ -18,8 +20,10 @@ showResult :-
     nl, write('GAME FINISHED').
 
 
-% This function will extract the element from Board, specifying the Row and Column
-% :- extractElement(+Row, +Column, +Board, -Element)
+/* 
+    This function will extract the element from Board, specifying the Row and Column
+    extractElement(+Row, +Column, +Board, -Element) 
+ */
 extractElement(Row, Column, Board, Element) :-
     findnth(Row, Board, ExtractedRow),
     findnth(Column, ExtractedRow, Element).
@@ -36,9 +40,9 @@ isPieceSelectable(Piece,Player) :-
     
 
 
-    
-/**
- @brief: Manage the player's turn, by asking which element to move and where to.
+
+/*
+ Manage the player's turn, by asking which element to move and where to.
  TODO: Must check if play is valid, aka moving orthogonally, not going over any pieces, not landing on an occupied cell. 
 */
 playerTurn(Player, Board, NextPlayer, UpdatedBoard) :-
@@ -49,27 +53,18 @@ playerTurn(Player, Board, NextPlayer, UpdatedBoard) :-
         write('Choose element to move\n'),
         manageRow(Old_Row),
         manageColumn(Old_Column),
-        
-        /* TODO: Real_old_row is Old_row -1 might be done inside the manageRow and ManageColumn */
-        Real_Old_Row is Old_Row-1, /*If row ==1, index in the list is 1-1=0 */
-        Real_Old_Column is Old_Column-1,
+
         /* Extracting the element that is to be moved for analysis */
         extractElement(Real_Old_Row, Real_Old_Column, Board, Element),
         isPieceSelectable(Element, Player), !,
 
     /* Getting the final position */
-    
     repeat,
         manageRow(New_Row),
         manageColumn(New_Column), !,
-        
-
-    Real_New_Row is New_Row-1,
-    Real_New_Column is New_Column-1,
-
+    
     replaceElement(Real_Old_Row, Real_Old_Column, empty, Board, SecondBoard),
     replaceElement(Real_New_Row, Real_New_Column, Element, SecondBoard, UpdatedBoard),
-
-    NextPlayer is ((Player rem 2) +1 ).
+    NextPlayer is ((Player rem 2) +1 ). /* Player will either be 1 or 2, depending on current Player.*/
 
 

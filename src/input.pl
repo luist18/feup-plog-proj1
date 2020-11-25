@@ -15,7 +15,8 @@ readChar(Input) :-
 manageRow(Old_Row) :-
     write('Row?'),
     readChar(Row),
-    convert_char_to_int(Row, Old_Row).
+    convert_char_to_int(Row, Row_tmp)
+    Old_Row is Row_tmp-1. /*If row ==1, index in the list is 1-1=0 */
 
 /*
     :- manageColumn(-Old_Column)
@@ -24,7 +25,8 @@ manageRow(Old_Row) :-
 manageColumn(Old_Column) :-
     write('Column?'),
     readChar(Column),
-    convert_char_to_int(Column, Old_Column).
+    convert_char_to_int(Column, Column_tmp),
+    Old_Column is Column_tmp -1.
 
 
 
