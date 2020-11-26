@@ -97,21 +97,21 @@ validBasicMove(_, Old_Row, _, New_Row) :-
 checkForJumping(Old_Column, Old_Row, New_Column, New_Row, Board):-
 	Old_Column == New_Column,
 	RowDifference is (New_Row-Old_Row),
-	RowDifference < 0, %If difference is negative, piece is moving down
-    checkForPiecesOnColumn(Old_Column, New_Row, Old_Row, Board).
+	RowDifference < 0, %If difference is negative, piece is moving up
+    checkForPiecesOnColumn(Old_Column, New_Row-1, Old_Row-1, Board).
 
 
 checkForJumping(Old_Column, Old_Row, New_Column, New_Row, Board):-
 	Old_Column == New_Column,
 	RowDifference is (New_Row-Old_Row),
-	RowDifference > 0, %If difference is positive, piece is moving up
+	RowDifference > 0, %If difference is positive, piece is moving down
     checkForPiecesOnColumn(Old_Column, Old_Row, New_Row, Board).
 
 checkForJumping(Old_Column, Old_Row, New_Column, New_Row, Board):-
 	Old_Row == New_Row,
 	ColumnDifference is (New_Column-Old_Column),
 	ColumnDifference < 0, %If difference is negative, piece is moving left
-    checkForPiecesOnRow(Old_Row, New_Column, Old_Column, Board).
+    checkForPiecesOnRow(Old_Row, New_Column-1, Old_Column-1, Board).
 
 checkForJumping(Old_Column, Old_Row, New_Column, New_Row, Board):-
 	Old_Row == New_Row,
