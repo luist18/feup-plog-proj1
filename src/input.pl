@@ -1,6 +1,6 @@
 /*
     :- readChar(-Input)
-    Get input from user. Get 2 chars in order to ignore the newline~
+    Get input from user. Get 2 chars in order to ignore the newline
     TODO: Function is only reading 1 char + new line, game will probably break if user inputs more than 1 char.
 */
 readChar(Input) :-

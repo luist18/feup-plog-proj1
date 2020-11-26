@@ -3,6 +3,7 @@ gameLoop :-
     assert(state(1, InitialBoard)),
     repeat,
         retract(state(Player, CurrentBoard)),
+        write('\33\[2J'),
         displayBoard(CurrentBoard),
         playerTurn(Player, CurrentBoard, NextPlayer, NextBoard),
         assert(state(NextPlayer, NextBoard)),
@@ -18,8 +19,6 @@ endOfGame(N) :-
 
 showResult :- 
     nl, write('GAME FINISHED').
-
-
 
 /*
  Manage the player's turn, by asking which element to move and where to.
@@ -40,13 +39,19 @@ playerTurn(Player, Board, NextPlayer, UpdatedBoard) :-
         validateMove(Player, Old_Column, Old_Row, New_Column, New_Row, Board),!,
 
        
-    % MakingMove
+    
     extractElement(Old_Column, Old_Row, Board, Element ),
-    replaceElement(Old_Row, Old_Column, empty, Board, SecondBoard),
-    replaceElement(New_Row, New_Column, Element, SecondBoard, UpdatedBoard),
+    makeMove(Old_Column, Old_Row, New_Column, New_Row, Board, Element, UpdatedBoard),
     /* TODO CheckForCapture */
     NextPlayer is ((Player rem 2) +1 ). /* Player will either be 1 or 2, depending on current Player.*/
 
+
+/*
+    Predicate responsible for moving the elements in the board
+*/
+makeMove(Old_Column, Old_Row, New_Column, New_Row, Board, Element, UpdatedBoard) :-
+    replaceElement(Old_Row, Old_Column, empty, Board, SecondBoard),
+    replaceElement(New_Row, New_Column, Element, SecondBoard, UpdatedBoard).
 
 /*
     Checks if move is valid
@@ -58,7 +63,6 @@ validateMove(Player, Old_Column, Old_Row, New_Column, New_Row, Board) :-
     validBasicMove(Old_Column, Old_Row, New_Column, New_Row),
     checkForJumping(Old_Column, Old_Row, New_Column, New_Row, Board).
     
-
 /* 
     This function will extract the element from Board, specifying the Row and Column
     extractElement(+Row, +Column, +Board, -Element) 
@@ -99,7 +103,6 @@ checkForJumping(Old_Column, Old_Row, New_Column, New_Row, Board):-
 	RowDifference is (New_Row-Old_Row),
 	RowDifference < 0, %If difference is negative, piece is moving up
     checkForPiecesOnColumn(Old_Column, New_Row-1, Old_Row-1, Board).
-
 
 checkForJumping(Old_Column, Old_Row, New_Column, New_Row, Board):-
 	Old_Column == New_Column,
