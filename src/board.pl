@@ -10,68 +10,43 @@ initialBoard( [
     [mountain,white3,white2,white2,white2,white2,white2,white3,mountain]
 ]).
 
-middleBoard( [
-    [mountain,empty,empty,black2,black2,empty,empty,black3,mountain],
-    [empty,empty,empty,empty,empty,empty,empty,empty,empty],
-    [empty,empty,empty,empty,empty,empty,empty,empty,empty],
-    [empty,empty,empty,black2,black4,empty,empty,white2,empty],
-    [cave,empty,empty,empty,cave,black2,white2,empty,cave],
-    [empty,white2,empty,empty,empty,empty,empty,white2,empty],
-    [empty,empty,empty,empty,empty,empty,empty,empty,empty],
-    [empty,empty,empty,empty,white4,empty,empty,empty,empty],
-    [mountain,empty,white2,empty,empty,empty,empty,empty,mountain]
-]).
+translate(empty, '    ').
+translate(black1, ' B1 ').
+translate(black2, ' B2 ').
+translate(black3, ' B3 ').
+translate(black4, ' B4 ').
+translate(black5, ' B5 ').
+translate(white1, ' W1 ').
+translate(white2, ' W2 ').
+translate(white3, ' W3 ').
+translate(white4, ' W4 ').
+translate(white5, ' W5 ').
+translate(mountain, ' M  ').
+translate(cave, ' C  ').
 
-finalBoard( [
-    [mountain,empty,empty,empty,black2,empty,empty,empty,mountain],
-    [empty,empty,empty,empty,empty,empty,empty,empty,empty],
-    [empty,empty,empty,empty,empty,empty,empty,empty,empty],
-    [empty,empty,empty,empty,empty,empty,empty,empty,empty],
-    [cave,empty,empty,empty,cave,empty,empty,empty,cave],
-    [empty,empty,empty,black3,empty,black2,empty,empty,empty],
-    [empty,empty,empty,empty,empty,empty,empty,empty,empty],
-    [empty,empty,empty,empty,empty,white3,empty,empty,empty],
-    [mountain,empty,empty,empty,empty,empty,empty,empty,mountain]
-]).
-
-translate(empty, S)        :- S='    '.
-translate(black1, S)       :- S=' B1 '.
-translate(black2, S)       :- S=' B2 '.
-translate(black3, S)       :- S=' B3 '.
-translate(black4, S)       :- S=' B4 '.
-translate(black5, S)       :- S=' B5 '.
-translate(white1, S)       :- S=' W1 '.
-translate(white2, S)       :- S=' W2 '.
-translate(white3, S)       :- S=' W3 '.
-translate(white4, S)       :- S=' W4 '.
-translate(white5, S)       :- S=' W5 '.
-translate(mountain, S)     :- S=' M  '.
-translate(cave, S)         :- S=' C  '.
-
-printColumnsRow :- 
+print_columns_indicator :- 
     write(' | A  | B  | C  | D  | E  | F  | G  | H  | I  |'), nl.
 
-printSeparator:-
+print_separator:-
     write('_______________________________________________'),nl.
 
-displayBoard(X) :-
-    printColumnsRow,
-    printSeparator,
-    printMatrix(X,1).
+display_board(X) :-
+    print_columns_indicator,
+    print_separator,
+    print_matrix(X,1).
 
-printMatrix([], _N).
-
-printMatrix([Head | Tail], N) :-
+print_matrix([], _N).
+print_matrix([Head | Tail], N) :-
     write(N),
     write('|'),
-    printList(Head),
-    printSeparator,
-    N1 is N+1, 
-    printMatrix(Tail, N1).
+    print_list(Head),
+    print_separator,
+    N1 is N + 1, 
+    print_matrix(Tail, N1).
 
-printList([]) :- nl.
-printList([Head|Tail]) :- 
+print_list([]) :- nl.
+print_list([Head|Tail]) :- 
     translate(Head, X),
     write(X), 
     write('|'), 
-    printList(Tail).
+    print_list(Tail).

@@ -3,6 +3,8 @@
 :- consult('util.pl').
 :- consult('game.pl').
 :- consult('input.pl').
+:- use_module(library(lists)).
+:- use_module(library(random)).
 
 
-play :- mainMenu.
+play :- main_menu.

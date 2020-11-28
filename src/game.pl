@@ -4,16 +4,13 @@ gameLoop :-
     repeat,
         retract(state(Player, CurrentBoard)),
         write('\33\[2J'),
-        displayBoard(CurrentBoard),
+        display_board(CurrentBoard),
         playerTurn(Player, CurrentBoard, NextPlayer, NextBoard),
         assert(state(NextPlayer, NextBoard)),
         endOfGame(2), !,
     showResult.
 
 
-/*
-    Purposely failing. This function will be responsible for checking the end condition of the game.
-*/
 endOfGame(N) :-
     N > 10, write('End game'), nl.
 
@@ -30,16 +27,11 @@ playerTurn(Player, Board, NextPlayer, UpdatedBoard) :-
     /* Getting position of piece to move */
     repeat,
         write('CHOOSE ELEMENT TO MOVE\n'),
-        manageRow(Old_Row),
-        manageColumn(Old_Column),
+        read_move(Old_Row-Old_Column),
         write('CHOOSE FINAL POSITION\n'),
         /* Getting the final position */
-        manageRow(New_Row),
-        manageColumn(New_Column),
-        validateMove(Player, Old_Column, Old_Row, New_Column, New_Row, Board),!,
-
-       
-    
+        read_move(New_Row-New_Column),
+        validateMove(Player, Old_Column, Old_Row, New_Column, New_Row, Board), !,
     extractElement(Old_Column, Old_Row, Board, Element ),
     makeMove(Old_Column, Old_Row, New_Column, New_Row, Board, Element, UpdatedBoard),
     /* TODO CheckForCapture */
@@ -68,8 +60,8 @@ validateMove(Player, Old_Column, Old_Row, New_Column, New_Row, Board) :-
     extractElement(+Row, +Column, +Board, -Element) 
  */
 extractElement(Column, Row, Board, Element) :-
-    findnth(Row, Board, ExtractedRow),
-    findnth(Column, ExtractedRow, Element).
+    nth0(Row, Board, ExtractedRow),
+    nth0(Column, ExtractedRow, Element).
 
 /*
     Checks if Player (1 - White, 2 - Black) can choose the selected piece

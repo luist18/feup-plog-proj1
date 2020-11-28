@@ -1,4 +1,4 @@
-mainMenu :-
+main_menu :-
 	write('================================='), nl,
 	write('=         THREE DRAGONS         ='), nl,
 	write('================================='), nl,
@@ -8,18 +8,17 @@ mainMenu :-
 	write('=   3. Exit                     ='), nl,
 	write('=                               ='), nl,
 	write('================================='), nl,
-    write('Choose an option:'), nl,
-    readChar(Input),
-    menuOption(Input).
+  write('Choose an option: '), nl,
+  read_char(Input),
+  menu_option(Input).
 
 
-menuOption('1') :- gameLoop.
-menuOption('2') :- credits.
-menuOption('3').
-menuOption('4') :- 
-    write('Wrong input received. Please try again!'), nl,
-    mainMenu.
+menu_option('1') :- gameLoop.
+menu_option('2') :- credits.
+menu_option('3').
 
+menu_option(_) :-
+	write('Wrong input received. Please try again!'), nl,mainMenu.
 
 credits :-
   write('================================='), nl,
@@ -32,7 +31,4 @@ credits :-
 	write('=                               ='), nl,
 	write('================================='), nl.
   
-
-
 initial(GameState) :- initialBoard(GameState).
-
