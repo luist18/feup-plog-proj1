@@ -1,12 +1,13 @@
 game_loop :-
     initialBoard(InitialBoard),
-    assert(state(1, InitialBoard)),
+    assert(state(1, InitialBoard, available_caves(true-true-true))),
     repeat,
-        retract(state(Player, CurrentBoard)),
+        retract(state(Player, CurrentBoard, available_caves(C1-C2-C3))),
+        write('After retracting state, caves are '), write(C1-C2-C3), nl,
         %write('\33\[2J'),
         display_board(CurrentBoard),
-        player_turn(Player, CurrentBoard, NextPlayer, NextBoard),
-        assert(state(NextPlayer, NextBoard)),
+        player_turn(Player, CurrentBoard, NextPlayer, NextBoard, available_caves(C1-C2-C3), available_caves(X1-X2-X3)),
+        assert(state(NextPlayer, NextBoard, available_caves(X1-X2-X3))),
         end_of_game(2), !,
     show_result.
 
@@ -19,9 +20,9 @@ show_result :-
 
 /*
  Manage the player's turn, by asking which element to move and where to.
- TODO: Must check selected piece is not going over any pieces, nor landing on an occupied cell. 
+ 
 */
-player_turn(Player, Board, NextPlayer, UpdatedBoard) :-
+player_turn(Player, Board, NextPlayer, UpdatedBoard, available_caves(C1-C2-C3), available_caves(X1-X2-X3)) :-
     write('Player:'), write(Player), nl,
     
     /* Getting position of piece to move */
@@ -37,7 +38,8 @@ player_turn(Player, Board, NextPlayer, UpdatedBoard) :-
     make_move(Old_Column, Old_Row, New_Column, New_Row, Board, Element, TempBoard),
     /* TODO CheckForCapture */
     check_normal_captures(TempBoard, Player, position(New_Column, New_Row), TempBoard2), !,
-    spawnDragons(TempBoard2, Player, UpdatedBoard), !,
+    spawnDragons(TempBoard2, Player, UpdatedBoard, available_caves(C1-C2-C3), available_caves(X1-X2-X3)), !,
+ 
     NextPlayer is ((Player rem 2) +1 ). /* Player will either be 1 or 2, depending on current Player.*/
 
 
@@ -236,17 +238,18 @@ is_element_capturable(2, white5).
 
 %==============SPAWN DRAGONS================================
 
-spawnDragons(Board, Player, UpdatedBoard) :- 
-    spawnLeftDragon(Board, Player, TempBoard),
-    spawnMiddleDragon(TempBoard, Player, TempBoard2),
-    spawnRightDragon(TempBoard2, Player, UpdatedBoard).
+spawnDragons(Board, Player, UpdatedBoard, available_caves(C1-C2-C3), available_caves(X1-X2-X3)) :- 
+    spawnLeftDragon(Board, Player, TempBoard, C1,X1),
+    spawnMiddleDragon(TempBoard, Player, TempBoard2,C2,X2),
+    spawnRightDragon(TempBoard2, Player, UpdatedBoard, C3,X3).
 
 
 %White dragon
-spawnLeftDragon(Board, 1, UpdatedBoard) :-
+spawnLeftDragon(Board, 1, UpdatedBoard, Available, NewAvailability) :-
     %make sure dragon didn't spawn yet
-    extract_element(0,4, Board, Element),
-    Element == cave, 
+    /*extract_element(0,4, Board, Element),
+    Element == cave, */
+    Available == true,
     %check element above the cave
     extract_element(0, 3, Board, Element1 ),
     is_white_piece(Element1),
@@ -257,13 +260,15 @@ spawnLeftDragon(Board, 1, UpdatedBoard) :-
     extract_element(1, 4, Board, Element3 ),
     is_white_piece(Element3),
     %There are three white pieces surrounding the cave. Must spawn white dragon
-    replaceElement(4,0, white3, Board, UpdatedBoard).
+    replaceElement(4,0, white3, Board, UpdatedBoard),
+    NewAvailability = false.
     
 %Black Dragon
-spawnLeftDragon(Board, 2, UpdatedBoard) :-
+spawnLeftDragon(Board, 2, UpdatedBoard, Available, NewAvailability) :-
     %make sure dragon didn't spawn yet
-    extract_element(0,4, Board, Element),
-    Element == cave, 
+    /*extract_element(0,4, Board, Element),
+    Element == cave, */
+    Available == true,
     %check element above the cave
     extract_element(0, 3, Board, Element1),
     is_black_piece(Element1),
@@ -274,17 +279,24 @@ spawnLeftDragon(Board, 2, UpdatedBoard) :-
     extract_element(1, 4, Board, Element3 ),
     is_black_piece(Element3),
     %There are three black pieces surrounding the cave. Must spawn black dragon
-    replaceElement(4,0, black3, Board, UpdatedBoard).
+    replaceElement(4,0, black3, Board, UpdatedBoard),
+    NewAvailability = false.
 
 
-spawnLeftDragon(Board, _, Board).
+
+spawnLeftDragon(Board, _, UpdatedBoard, false, false) :-
+    extract_element(0,4,Board, Element),
+    Element == empty,
+    replaceElement(4,0,cave, Board, UpdatedBoard).
+spawnLeftDragon(Board, _, Board, Av, Av).
 
 
 %White dragon
-spawnMiddleDragon(Board, 1, UpdatedBoard) :-
+spawnMiddleDragon(Board, 1, UpdatedBoard, Available, NewAvailability) :-
     %make sure dragon didn't spawn yet
-    extract_element(4,4, Board, Element),
-    Element == cave, 
+    /*extract_element(4,4, Board, Element),
+    Element == cave, */
+    Available == true, 
     %check element above the cave
     extract_element(4, 3, Board, Element1 ),
     is_white_piece(Element1),
@@ -298,13 +310,15 @@ spawnMiddleDragon(Board, 1, UpdatedBoard) :-
     extract_element(3, 4, Board, Element4 ),
     is_white_piece(Element4),
     %There are four white pieces surrounding the cave. Must spawn white dragon
-    replaceElement(4,4, white5, Board, UpdatedBoard).
+    replaceElement(4,4, white5, Board, UpdatedBoard),
+    NewAvailability = false.
 
 %Black dragon
-spawnMiddleDragon(Board, 2, UpdatedBoard) :-
+spawnMiddleDragon(Board, 2, UpdatedBoard, Available, NewAvailability) :-
     %make sure dragon didn't spawn yet
-    extract_element(4,4, Board, Element),
-    Element == cave, 
+    /*extract_element(4,4, Board, Element),
+    Element == cave, */
+    Available == true, 
     %check element above the cave
     extract_element(4, 3, Board, Element1 ),
     is_black_piece(Element1),
@@ -318,15 +332,21 @@ spawnMiddleDragon(Board, 2, UpdatedBoard) :-
     extract_element(3, 4, Board, Element4 ),
     is_black_piece(Element4),
     %There are four black pieces surrounding the cave. Must spawn black dragon
-    replaceElement(4,4, black5, Board, UpdatedBoard).
+    replaceElement(4,4, black5, Board, UpdatedBoard),
+    NewAvailability = false.
 
-spawnMiddleDragon(Board, _, Board).
+spawnMiddleDragon(Board, _ , UpdatedBoard, false, false) :-
+    extract_element(4,4, Board, Element),
+    Element == empty,
+    replaceElement(4,4, cave, Board, UpdatedBoard).
+spawnMiddleDragon(Board, _, Board, Av, Av).
 
 %White dragon
-spawnRightDragon(Board, 1, UpdatedBoard) :-
+spawnRightDragon(Board, 1, UpdatedBoard, Available, NewAvailability) :-
     %make sure dragon didn't spawn yet
-    extract_element(8,4, Board, Element),
-    Element == cave, 
+    /*extract_element(8,4, Board, Element),
+    Element == cave, */
+    Available == true,
     %check element above the cave
     extract_element(8, 3, Board, Element1 ),
     is_white_piece(Element1),
@@ -337,15 +357,17 @@ spawnRightDragon(Board, 1, UpdatedBoard) :-
     extract_element(7, 4, Board, Element3 ),
     is_white_piece(Element3),
     %There are three white pieces surrounding the cave. Must spawn white dragon
-    replaceElement(4,8, white3, Board, UpdatedBoard).
+    replaceElement(4,8, white3, Board, UpdatedBoard),
+    NewAvailability = false.
     
 
 
 %Black dragon
-spawnRightDragon(Board, 2, UpdatedBoard) :-
+spawnRightDragon(Board, 2, UpdatedBoard, Available, NewAvailability) :-
     %make sure dragon didn't spawn yet
-    extract_element(8,4, Board, Element),
-    Element == cave, 
+    /*extract_element(8,4, Board, Element),
+    Element == cave, */
+    Available==true, 
     %check element above the cave
     extract_element(8, 3, Board, Element1 ),
     is_black_piece(Element1),
@@ -356,9 +378,17 @@ spawnRightDragon(Board, 2, UpdatedBoard) :-
     extract_element(7, 4, Board, Element3 ),
     is_black_piece(Element3),
     %There are three black pieces surrounding the cave. Must spawn black dragon
-    replaceElement(4,8, black3, Board, UpdatedBoard).
+    replaceElement(4,8, black3, Board, UpdatedBoard),
+    NewAvailability = false.
 
-spawnRightDragon(Board, _, Board).
+
+spawnRightDragon(Board, _, UpdatedBoard, false, false) :-
+    extract_element(8,4,Board, Element),
+    Element == empty,
+    replaceElement(4,8, cave, Board, UpdatedBoard).
+
+
+spawnRightDragon(Board, _, Board,Av, Av).
 
 
 
