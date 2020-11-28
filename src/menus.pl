@@ -13,7 +13,7 @@ main_menu :-
   menu_option(Input).
 
 
-menu_option('1') :- gameLoop.
+menu_option('1') :- game_loop.
 menu_option('2') :- credits.
 menu_option('3').
 
