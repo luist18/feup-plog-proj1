@@ -1,23 +1,25 @@
-/*
-    :-replace_element_in_list(+List, +Index, +Value, -NewList)
-    It will replace the element in List, specified by the Index, with a specific Value, returning the new list.
-*/
-replace_element_in_list([_|T], 0, X, [X|T]).
-replace_element_in_list([H|T], I, X, [H|R]) :- 
+% Replaces an element in a list given an index.
+%
+% list_replace(+List, +Index, +NewValue, -ResultList)
+list_replace([_|T], 0, X, [X|T]).
+
+list_replace([H|T], I, X, [H|R]) :- 
     I > 0, 
-    I1 is I-1, 
-    replace_element_in_list(T, I1, X, R).
+    I1 is I - 1, 
+    list_replace(T, I1, X, R).
 
-/*
-    :- replaceElement(+Row, +Column, +Value, +OldList, -NewList)
-    It will replace an element in a matrix, by specifying the row and column, as well as the value, returning the new List.
-*/
-replaceElement(Row,Column,Value,OldList,NewList) :-
-    nth0(Row, OldList, ExtractedRow),
-    replace_element_in_list(ExtractedRow, Column, Value, NewRow),
-    replace_element_in_list(OldList, Row, NewRow, NewList).
+% Replaces an element in a matrix given a row and a column.
+%
+% matrix_replace(+Matrix, +Row-Column, +Value, -ResultMatrix)
+matrix_replace(Matrix, Row-Column, Value, ResultMatrix) :-
+    nth0(Row, Matrix, ExtractedRow),
+    list_replace(ExtractedRow, Column, Value, NewRow),
+    list_replace(Matrix, Row, NewRow, ResultMatrix).
 
-% conver_char_to_int(+Char, -Integer)
+% Converts a char to int. These conversions are based in our
+% game problem.
+%
+% convert_char_to_int(+Char, -Integer)
 convert_char_to_int('1', 1).
 convert_char_to_int('2', 2).
 convert_char_to_int('3', 3).
