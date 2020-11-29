@@ -40,7 +40,7 @@ player_turn(Player, Board, NextPlayer, UpdatedBoard, available_caves(C1-C2-C3), 
     analyzeCaptures(TempBoard, Player, position(New_Column, New_Row), CustodialCaptures, StrengthCaptures),
     write('POWER CAPTURES: '), write(CustodialCaptures),nl,
     write('STRENGTH CAPTURES: '), write(StrengthCaptures),nl,
-    applyCaptures(TempBoard, Player, position(New_Column, New_Row), CustodialCaptures, StrengthCaptures, TempBoard2), !,
+    applyCaptures(TempBoard, position(New_Column, New_Row), CustodialCaptures, StrengthCaptures, TempBoard2), !,
     %check_normal_captures(TempBoard, Player, position(New_Column, New_Row), TempBoard2), !,
     spawnDragons(TempBoard2, Player, UpdatedBoard, available_caves(C1-C2-C3), available_caves(X1-X2-X3)), !,
  
@@ -344,7 +344,8 @@ is_white_piece(white5).
 %CAPTURES START HERE
 
 %AnalyzeCaptures(Board, Player, position(Column, Row), CustodialCaptures, StrengthCaptures)
-%Initially, CustodialCaptures = []
+%Get all the possible directions in which normalCaptures can happen - CustodialCaptures List
+%Get all the possible directions in which strength captures can occur - StrengthCaptures List (up,down, left, right)
 analyzeCaptures(Board, Player, position(Column, Row),CustodialCaptures, StrengthCaptures) :-
     analyzeNormalUpCapture(Board, Player, position(Column, Row), CaptureList),
     analyzeNormalDownCapture(Board, Player, position(Column, Row), CaptureList2),
@@ -364,7 +365,7 @@ analyzeCaptures(Board, Player, position(Column, Row),CustodialCaptures, Strength
 
 
 
-
+%Check if a normal capture is possible upwards from the current position
 analyzeNormalUpCapture(Board, Player, position(Column, Row), [up]) :-
     Row >= 2,
     RowAbove is Row-1,
@@ -376,9 +377,10 @@ analyzeNormalUpCapture(Board, Player, position(Column, Row), [up]) :-
     Element1 \= empty, 
     \+is_element_capturable(Player, Element1).
     
-
+%If not, make sure predicate succeeds and returns empty list
 analyzeNormalUpCapture(_Board, _Player, _position, []).
 
+%Check if a normal capture is possible downwards from the current position
 analyzeNormalDownCapture(Board, Player, position(Column,Row), [down]) :-
     Row =< 6,
     RowBelow is Row+1,
@@ -390,13 +392,10 @@ analyzeNormalDownCapture(Board, Player, position(Column,Row), [down]) :-
     Element1 \= empty, 
     \+is_element_capturable(Player, Element1).
 
+%If not, make sure predicate succeeds and returns empty list
 analyzeNormalDownCapture(_Board, _Player, _position, []).
 
-
-
-
-
-
+%Check if a normal capture is possible leftwards from the current position
 analyzeNormalLeftCapture(Board, Player, position(Column, Row), [left]) :-
     Column >= 2,
     ColumnToTheLeft is Column-1,
@@ -408,10 +407,10 @@ analyzeNormalLeftCapture(Board, Player, position(Column, Row), [left]) :-
     Element1 \= empty, 
     \+is_element_capturable(Player, Element1).
 
-
+%If not, make sure predicate succeeds and returns empty list
 analyzeNormalLeftCapture(_Board, _Player, _position, []).
 
-
+%Check if a normal capture is possible rightwards from the current position
 analyzeNormalRightCapture(Board, Player, position(Column, Row), [right]) :-
     Column =< 6,
     ColumnToTheRight is Column+1,
@@ -422,7 +421,7 @@ analyzeNormalRightCapture(Board, Player, position(Column, Row), [right]) :-
     extract_element(OtherColumn, Row, Board, Element1),
     Element1 \= empty, 
     \+is_element_capturable(Player, Element1).
-
+%If not, make sure predicate succeeds and returns empty list
 analyzeNormalRightCapture(_Board, _Player, _position, []).
 
 
@@ -510,35 +509,88 @@ analyzeStrengthRightCapture(_Board, _Player, _position, []).
 %===================APPLY CAPTURES===========================================================
 
 %If there are no possible captures of any type, don't do anything
-applyCaptures(Board, _Player, _position, [], [], Board).
+applyCaptures(Board, _position, [], [], Board).
 
 %If there are no custodial captures but there is one strength capture available
-applyCaptures(Board, Player, position(Column, Row), [], StrengthCaptures, UpdatedBoard) :-
+applyCaptures(Board, position(Column, Row), [], StrengthCaptures, UpdatedBoard) :-
     length(StrengthCaptures, N), 
     N ==1, 
     nth0(0, StrengthCaptures, CaptureDirection),
-    applyStrengthCapture(Board, Player, position(Column, Row), CaptureDirection, UpdatedBoard).
+    applyStrengthCapture(Board, position(Column, Row), CaptureDirection, UpdatedBoard).
 
 %If there is 1 custodialCapture and 1 strengthCapture (its guaranteed they are both in the same direction)
 %Apply normal Capture
-applyCaptures(Board, Player, position(Column, Row), CustodialCaptures, StrengthCaptures, UpdatedBoard) :-
+applyCaptures(Board, position(Column, Row), CustodialCaptures, StrengthCaptures, UpdatedBoard) :-
     length(StrengthCaptures, N), 
     N ==1, 
     length(CustodialCaptures, C),
     C ==1, 
     nth0(0, CustodialCaptures, CaptureDirection),
-    applyNormalCapture(Board, Player, position(Column, Row), CaptureDirection, UpdatedBoard).
+    applyNormalCapture(Board, position(Column, Row), CaptureDirection, UpdatedBoard).
+
+
+%If there are multiple custodialCaptures and no StrengthCapture
+applyCaptures(Board, position(Column,Row), [H|T], [], UpdatedBoard) :-
+    %apply capture to first direction
+    %Call predicate again with NewCustodialCaptures (doesnt have the first direction which was already applied)
+    applyNormalCapture(Board, position(Column, Row), H, TempBoard),
+    applyCaptures(TempBoard, position(Column, Row), T, [], UpdatedBoard).
+
 
 %If there are no custodial captures but there are multiple strength captures available
-applyCaptures(Board, Player, position(Column, Row), [], StrengthCaptures, UpdatedBoard).
+applyCaptures(Board, position(Column, Row), [], StrengthCaptures, UpdatedBoard) :-
+    display_board(Board),
+    ask_user_for_capture_direction(StrengthCaptures, Direction), /* TODO for EASY AI, get random direction for list */
+    applyStrengthCapture(Board, position(Column, Row), Direction, UpdatedBoard).
 
-%If there are custodial captures and multiple strength captures available
-%Will eventually have to ask user for input
-applyCaptures(Board, Player, position(Column, Row), CustodialCaptures, StrengthCaptures, UpdatedBoard).
+%If there is one custodial capture and multiple strength captures available, user simply chooses the direction
+
+applyCaptures(Board, position(Column, Row), CustodialCaptures, StrengthCaptures, UpdatedBoard) :-
+    length(CustodialCaptures, N),
+    N==1,
+    display_board(Board),
+    %Get list of possible directions with no duplicates
+    setof(X, (member(X, CustodialCaptures) ; member(X, StrengthCaptures)), PossibleDirections), 
+    ask_user_for_capture_direction(PossibleDirections, Direction),
+
+    (memberchk(Direction, CustodialCaptures), NewCustodialCaptures=[Direction] ; NewCustodialCaptures = []),
+    (memberchk(Direction, StrengthCaptures), NewStrengthCaptures=[Direction] ; NewStrengthCaptures = []),
+    !, applyCaptures(Board, position(Column, Row), NewCustodialCaptures, NewStrengthCaptures, UpdatedBoard).
+
+%There are multiple custodial captures available and there are strength captures available. User must choose which one
+applyCaptures(Board, position(Column, Row), CustodialCaptures, StrengthCaptures, UpdatedBoard) :-
+    display_board(Board),
+    write('You have multiple capture types available.\n'),
+    repeat,
+        read_char('Please choose one (c - custodial, s - strength)\n', Input),
+        (
+            Input == 'c', applyCaptures(Board, position(Column, Row), CustodialCaptures, [], UpdatedBoard) ; 
+            Input == 's', applyCaptures(Board, position(Column, Row), [], StrengthCaptures, UpdatedBoard)), !.
+
+
+ask_user_for_capture_direction(StrengthCaptures, Direction) :-
+    write('You can perform a capture in one of the following directions: '),
+    write(StrengthCaptures),
+    nl,
+    repeat,
+        read_char('Please choose (u/d/l/r)\n', Input),
+        convert_input_to_direction(Input, Direction), 
+        memberchk(Direction, StrengthCaptures),!. %Make sure its a valid move present in the possible moves
 
 
 
-applyStrengthCapture(Board, Player, position(Column, Row), up, UpdatedBoard) :-
+
+%Used in captures when it must ask the user in what direction he'd like to capture the opponent piece
+convert_input_to_direction('u', up).
+convert_input_to_direction('d', down).
+convert_input_to_direction('l', left).
+convert_input_to_direction('r', right).
+
+
+
+
+
+applyStrengthCapture(Board, position(Column, Row), up, UpdatedBoard) :-
     %Replace element above my position by 'empty'
     NewRow is Row-1,
     replaceElement(NewRow, Column, empty, Board, TempBoard),
@@ -549,7 +601,7 @@ applyStrengthCapture(Board, Player, position(Column, Row), up, UpdatedBoard) :-
     replaceElement(Row, Column, FinalPiece, TempBoard, UpdatedBoard).
 
 
-applyStrengthCapture(Board, Player, position(Column, Row), down, UpdatedBoard) :-
+applyStrengthCapture(Board, position(Column, Row), down, UpdatedBoard) :-
     %Replace element below my position by 'empty'
     NewRow is Row+1,
     replaceElement(NewRow, Column, empty, Board, TempBoard),
@@ -559,7 +611,7 @@ applyStrengthCapture(Board, Player, position(Column, Row), down, UpdatedBoard) :
     %Replace in board.
     replaceElement(Row, Column, FinalPiece, TempBoard, UpdatedBoard).
 
-applyStrengthCapture(Board, Player, position(Column, Row), left, UpdatedBoard) :-
+applyStrengthCapture(Board, position(Column, Row), left, UpdatedBoard) :-
     %Replace element to the left of my position by 'empty'
     NewColumn is Column-1,
     replaceElement(Row, NewColumn, empty, Board, TempBoard),
@@ -569,7 +621,7 @@ applyStrengthCapture(Board, Player, position(Column, Row), left, UpdatedBoard) :
     %Replace in board.
     replaceElement(Row, Column, FinalPiece, TempBoard, UpdatedBoard).
 
-applyStrengthCapture(Board, Player, position(Column, Row), right, UpdatedBoard) :-
+applyStrengthCapture(Board, position(Column, Row), right, UpdatedBoard) :-
     %Replace element to the right of my position by 'empty'
     NewColumn is Column+1,
     replaceElement(Row, NewColumn, empty, Board, TempBoard),
@@ -583,18 +635,18 @@ applyStrengthCapture(Board, Player, position(Column, Row), right, UpdatedBoard) 
 
 
 %No need to do any verification. At this point, simply apply the capture
-applyNormalCapture(Board, Player, position(Column, Row), up, UpdatedBoard) :-
+applyNormalCapture(Board, position(Column, Row), up, UpdatedBoard) :-
     RowAbove is Row-1,
     replaceElement(RowAbove, Column, empty, Board, UpdatedBoard).
 
-applyNormalCapture(Board, Player, position(Column, Row), down, UpdatedBoard) :-
+applyNormalCapture(Board, position(Column, Row), down, UpdatedBoard) :-
     RowBelow is Row+1,
     replaceElement(RowBelow, Column, empty, Board, UpdatedBoard).
 
-applyNormalCapture(Board, Player, position(Column, Row), left, UpdatedBoard) :-
+applyNormalCapture(Board, position(Column, Row), left, UpdatedBoard) :-
     LeftColumn is Column-1,
     replaceElement(Row, LeftColumn, empty, Board, UpdatedBoard).
 
-applyNormalCapture(Board, Player, position(Column, Row), right, UpdatedBoard) :-
+applyNormalCapture(Board, position(Column, Row), right, UpdatedBoard) :-
     RightColumn is Column+1,
     replaceElement(Row, RightColumn, empty, Board, UpdatedBoard).
