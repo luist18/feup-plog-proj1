@@ -1,17 +1,20 @@
 game_loop :-
-    initialBoard(InitialBoard),
-    assert(state(white, InitialBoard, available_caves(true-true-true))),
+    retractall(state(_, _, _, _)),
+    testBoard(InitialBoard),
+    assert(state(white, InitialBoard, available_caves(true-true-true), pieces_count(white-8, black-8))),
     repeat,
-        retract(state(Player, Board, available_caves(C1-C2-C3))),
-        %write('\33\[2J'),
+        state(Player, Board, available_caves(Caves), _),
+        write('\33\[2J'),
         display_board(Board),
-        player_turn(Player, Board, NextBoard, available_caves(C1-C2-C3), available_caves(X1-X2-X3)),
-        assert(state(next_player(Player), NextBoard, available_caves(X1-X2-X3))),
+        player_turn(NextBoard, NewCaves, NewPieceCount),
+        next_player(NextPlayer),
+        retract(state(Player, Board, available_caves(Caves), _)),
+        assert(state(NextPlayer, NextBoard, available_caves(NewCaves), NewPieceCount)),
         end_of_game(2), !,
     show_result.
 
 next_player(Player) :-
-    current_player(white),
+    state(white, _, _, _),
     Player = black.
 
 next_player(white).
@@ -22,31 +25,28 @@ end_of_game(N) :-
 show_result :- 
     nl, write('GAME FINISHED').
 
-player_turn(Player, Board, UpdatedBoard, available_caves(C1-C2-C3), available_caves(X1-X2-X3)) :-
+player_turn(UpdatedBoard, NewCaves, NewPieceCount) :-
+    state(Player, Board, _, _),
     write('Player: '), write(Player), nl,
-    
-    /* Getting position of piece to move */
     repeat,
         write('Select the piece to move...'), nl,
         read_move(From),
-        write('Select the position to move...'),
+        write('Select the position to move...'), nl,
         read_move(To),
-        validate_move(Player, Old_Column, Old_Row, New_Column, New_Row, Board), !,
-    extract_element(Old_Column, Old_Row, Board, Element ),
-<<<<<<< HEAD
-    make_move(Old_Column, Old_Row, New_Column, New_Row, Board, Element, TempBoard),
-    /* TODO CheckForCapture */
-    analyzeCaptures(TempBoard, Player, position(New_Column, New_Row), CustodialCaptures, StrengthCaptures),
-    write('POWER CAPTURES: '), write(CustodialCaptures),nl,
-    write('STRENGTH CAPTURES: '), write(StrengthCaptures),nl,
-    applyCaptures(TempBoard, position(New_Column, New_Row), CustodialCaptures, StrengthCaptures, TempBoard2), !,
-=======
-    make_move(From, To, Element, TempBoard), !.
+        (
+            validate_move(From, To)
+            ;
+            write('Invalid move!'), nl,
+            fail
+        ), !,
+    get_element(From, Board, Piece),
+    make_move(From, To, Piece, MoveBoard), !,
+    spawn_dragons(MoveBoard, DragonsBoard, NewCaves, NewPieceCount),
+    set_empty_caves(From, DragonsBoard, UpdatedBoard).
     %analyzeCaptures(TempBoard, Player, position(New_Column, New_Row), CustodialCaptures, StrengthCaptures),
     %write('POWER CAPTURES: '), write(CustodialCaptures),nl,
     %write('STRENGTH CAPTURES: '), write(StrengthCaptures),nl,
     %applyCaptures(TempBoard, Player, position(New_Column, New_Row), CustodialCaptures, StrengthCaptures, TempBoard2), !,
->>>>>>> 8de678ccf6dcf1a7038240c91de057b1e897cfba
     %check_normal_captures(TempBoard, Player, position(New_Column, New_Row), TempBoard2), !,
     %spawnDragons(TempBoard2, Player, UpdatedBoard, available_caves(C1-C2-C3), available_caves(X1-X2-X3)), !.
 
@@ -65,106 +65,8 @@ piece(white3, ' W3 ', white, 3).
 piece(white4, ' W4 ', white, 4).
 piece(white5, ' W5 ', white, 5).
 piece(mountain, ' M  ', none, 0).
-piece(cave, ' C  ', none, 0).
-
-make_move(From, To, Element, UpdatedBoard) :-
-    state(_, Board, _),
-    matrix_replace(Board, From, empty, TmpBoard),
-    matrix_replace(TmpBoard, To, Element, UpdatedBoard).
-
-validate_move(From, To) :-
-    state(Player, Board, _),
-    get_element(From, Board, Piece).
-    is_piece_selectable(Piece, Player),
-    has_different_positions(From, To),
-    is_valid_basic_move(From, To),
-    % check for jumping
-
-is_piece_selectable(Piece, Player) :-
-    piece(Piece, _, Player, _).
-
-has_different_positions(From, To) :-
-    From =:= To.
-
-is_valid_basic_move(FromRow-FromColumn, ToRow-ToColumn) :-
-    FromRow =:= ToRow;
-    FromColumn =:=ToColumn.
-    
-validate_move(Player, Old_Column, Old_Row, New_Column, New_Row, Board) :-
-    extract_element(Old_Column, Old_Row, Board, Element),
-    is_piece_selectable(Element, Player),
-    different_positions(Old_Column, Old_Row, New_Column, New_Row),
-    valid_basic_move(Old_Column, Old_Row, New_Column, New_Row),
-    check_for_jumping(Old_Column, Old_Row, New_Column, New_Row, Board).
-
-get_element(Row-Column, Board, Element) :-
-    nth0(Row, Board, ExtractedRow),
-    nth0(Column, ExtractedRow, Element).
-
-extract_element(Column, Row, Board, Element) :-
-    nth0(Row, Board, ExtractedRow),
-    nth0(Column, ExtractedRow, Element).
-
-different_positions(Old_Column, Old_Row, New_Column, New_Row) :-
-    Old_Column =\= New_Column ; Old_Row =\= New_Row.
-
-/*
-    Will check the basics for the move to be valid. 
-    Pieces only move orthogonally, so either column will be the same or row will be the same.
-*/
-valid_basic_move(Old_Column, _, New_Column, _) :-
-    Old_Column == New_Column.
-
-valid_basic_move(_, Old_Row, _, New_Row) :-
-    Old_Row == New_Row.
-
-/*
-    Predicate responsible for checking if movement is valid or if it's jumping over any pieces.
-*/
-check_for_jumping(Old_Column, Old_Row, New_Column, New_Row, Board):-
-	Old_Column == New_Column,
-	RowDifference is (New_Row-Old_Row),
-	RowDifference < 0, %If difference is negative, piece is moving up
-    check_for_pieces_on_column(Old_Column, New_Row-1, Old_Row-1, Board).
-
-check_for_jumping(Old_Column, Old_Row, New_Column, New_Row, Board):-
-	Old_Column == New_Column,
-	RowDifference is (New_Row-Old_Row),
-	RowDifference > 0, %If difference is positive, piece is moving down
-    check_for_pieces_on_column(Old_Column, Old_Row, New_Row, Board).
-
-check_for_jumping(Old_Column, Old_Row, New_Column, New_Row, Board):-
-	Old_Row == New_Row,
-	ColumnDifference is (New_Column-Old_Column),
-	ColumnDifference < 0, %If difference is negative, piece is moving left
-    check_for_pieces_on_row(Old_Row, New_Column-1, Old_Column-1, Board).
-
-check_for_jumping(Old_Column, Old_Row, New_Column, New_Row, Board):-
-	Old_Row == New_Row,
-	ColumnDifference is (New_Column-Old_Column),
-	ColumnDifference > 0, %If difference is positive, piece is moving right
-    check_for_pieces_on_row(Old_Row, Old_Column, New_Column, Board ).
-
-check_for_pieces_on_column(_, Small_Row, Big_Row, _) :-
-    CurrentRow is (Small_Row+1),
-    CurrentRow > Big_Row.
-
-check_for_pieces_on_column(Column, Small_Row, Big_Row, Board) :-
-    CurrentRow is (Small_Row+1),
-    extract_element(Column, CurrentRow, Board, Element ),
-    Element == empty, 
-    check_for_pieces_on_column(Column, CurrentRow, Big_Row, Board).
-
-check_for_pieces_on_row(_, Small_Column, Big_Column, _) :-
-    CurrentColumn is (Small_Column +1),
-    CurrentColumn > Big_Column.
-
-check_for_pieces_on_row(Row, Small_Column, Big_Column, Board) :-
-    CurrentColumn is (Small_Column +1),
-    extract_element(CurrentColumn, Row, Board, Element),
-    Element == empty,
-    check_for_pieces_on_row(Row, CurrentColumn, Big_Column, Board).
-
+piece(cave_available, ' CA ', none, 0).
+piece(cave_empty, ' CE ', none, 0).
 
 % Succeeds if player can capture a piece.
 %
@@ -181,15 +83,7 @@ is_element_capturable(2, white3).
 is_element_capturable(2, white4).
 is_element_capturable(2, white5).
 
-
-
 %==============SPAWN DRAGONS================================
-
-spawnDragons(Board, Player, UpdatedBoard, available_caves(C1-C2-C3), available_caves(X1-X2-X3)) :- 
-    spawnLeftDragon(Board, Player, TempBoard, C1,X1),
-    spawnMiddleDragon(TempBoard, Player, TempBoard2,C2,X2),
-    spawnRightDragon(TempBoard2, Player, UpdatedBoard, C3,X3).
-
 
 %White dragon
 spawnLeftDragon(Board, 1, UpdatedBoard, Available, NewAvailability) :-
@@ -228,8 +122,6 @@ spawnLeftDragon(Board, 2, UpdatedBoard, Available, NewAvailability) :-
     %There are three black pieces surrounding the cave. Must spawn black dragon
     replaceElement(4,0, black3, Board, UpdatedBoard),
     NewAvailability = false.
-
-
 
 spawnLeftDragon(Board, _, UpdatedBoard, false, false) :-
     extract_element(0,4,Board, Element),

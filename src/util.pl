@@ -16,6 +16,17 @@ matrix_replace(Matrix, Row-Column, Value, ResultMatrix) :-
     list_replace(ExtractedRow, Column, Value, NewRow),
     list_replace(Matrix, Row, NewRow, ResultMatrix).
 
+% Gets an element from a matrix.
+%
+% get_element(+Row-Column, +Matrix, -Element)
+get_element(Row-Column, Board, Element) :-
+    nth0(Row, Board, ExtractedRow),
+    nth0(Column, ExtractedRow, Element).
+
+extract_element(Column, Row, Board, Element) :-
+    nth0(Row, Board, ExtractedRow),
+    nth0(Column, ExtractedRow, Element).
+
 % Converts a char to int. These conversions are based in our
 % game problem.
 %
