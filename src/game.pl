@@ -37,7 +37,11 @@ player_turn(Player, Board, NextPlayer, UpdatedBoard, available_caves(C1-C2-C3), 
     extract_element(Old_Column, Old_Row, Board, Element ),
     make_move(Old_Column, Old_Row, New_Column, New_Row, Board, Element, TempBoard),
     /* TODO CheckForCapture */
-    check_normal_captures(TempBoard, Player, position(New_Column, New_Row), TempBoard2), !,
+    analyzeCaptures(TempBoard, Player, position(New_Column, New_Row), CustodialCaptures, StrengthCaptures),
+    write('POWER CAPTURES: '), write(CustodialCaptures),nl,
+    write('STRENGTH CAPTURES: '), write(StrengthCaptures),nl,
+    applyCaptures(TempBoard, Player, position(New_Column, New_Row), CustodialCaptures, StrengthCaptures, TempBoard2), !,
+    %check_normal_captures(TempBoard, Player, position(New_Column, New_Row), TempBoard2), !,
     spawnDragons(TempBoard2, Player, UpdatedBoard, available_caves(C1-C2-C3), available_caves(X1-X2-X3)), !,
  
     NextPlayer is ((Player rem 2) +1 ). /* Player will either be 1 or 2, depending on current Player.*/
@@ -144,79 +148,6 @@ check_for_pieces_on_row(Row, Small_Column, Big_Column, Board) :-
     extract_element(CurrentColumn, Row, Board, Element),
     Element == empty,
     check_for_pieces_on_row(Row, CurrentColumn, Big_Column, Board).
-
-
-check_normal_captures(Board, Player, position(New_Column, New_Row), FinalBoard) :-
-    check_normal_up_captures(Board, Player, position(New_Column, New_Row), TempBoard), 
-    check_normal_down_captures(TempBoard, Player, position(New_Column, New_Row), TempBoard2),
-    check_normal_left_captures(TempBoard2, Player, position(New_Column, New_Row), TempBoard3),
-    check_normal_right_captures(TempBoard3, Player, position(New_Column, New_Row), FinalBoard).
-
-
-%===========================NORMAL CAPTURES=================================
-check_normal_up_captures(Board, Player, position(Column, Row), UpdatedBoard) :-
-    Row >= 2,
-    RowAbove is Row-1,
-    extract_element(Column, RowAbove, Board, Element),
-    is_element_capturable(Player, Element),
-    %Get element above the enemy
-    OtherRow is Row-2,
-    extract_element(Column, OtherRow, Board, Element1),
-    Element1 \= empty, 
-    \+is_element_capturable(Player, Element1), 
-    replaceElement(RowAbove, Column, empty, Board, UpdatedBoard).
-
-%Make sure predicate succeeds.
-check_normal_up_captures(Board, _Player, _position, Board).
-
-check_normal_down_captures(Board, Player, position(Column, Row), UpdatedBoard) :-
-    Row =< 6,
-    RowBelow is Row+1,
-    extract_element(Column, RowBelow, Board, Element),
-    is_element_capturable(Player, Element),
-    %Get element below the enemy
-    OtherRow is Row+2,
-    extract_element(Column, OtherRow, Board, Element1),
-    Element1 \= empty, 
-    \+is_element_capturable(Player, Element1), 
-    replaceElement(RowBelow, Column, empty, Board, UpdatedBoard).
-
-%Make sure predicate succeeds.
-check_normal_down_captures(Board, _Player, _position, Board).
-
-
-check_normal_left_captures(Board, Player, position(Column, Row), UpdatedBoard) :-
-    Column >= 2,
-    ColumnToTheLeft is Column-1,
-    extract_element(ColumnToTheLeft, Row, Board, Element),
-    is_element_capturable(Player, Element),
-    %Get element above the enemy
-    OtherColumn is Column-2,
-    extract_element(OtherColumn, Row, Board, Element1),
-    Element1 \= empty, 
-    \+is_element_capturable(Player, Element1), 
-    replaceElement(Row, ColumnToTheLeft, empty, Board, UpdatedBoard).
-
-%Make sure predicate succeeds.
-check_normal_left_captures(Board, _Player, _position, Board).
-
-check_normal_right_captures(Board, Player, position(Column, Row), UpdatedBoard) :-
-    Column =< 6,
-    ColumnToTheRight is Column+1,
-    extract_element(ColumnToTheRight, Row, Board, Element),
-    is_element_capturable(Player, Element),
-    %Get element below the enemy
-    OtherColumn is Column+2,
-    extract_element(OtherColumn, Row, Board, Element1),
-    Element1 \= empty, 
-    \+is_element_capturable(Player, Element1), 
-    replaceElement(Row, ColumnToTheRight, empty, Board, UpdatedBoard).
-
-%Make sure predicate succeeds.
-check_normal_right_captures(Board, _Player, _position, Board).
-
-%===========================END================================================
-
 
 
 
@@ -408,3 +339,262 @@ is_white_piece(white3).
 is_white_piece(white4).
 is_white_piece(white5).
 
+
+%====================================================================
+%CAPTURES START HERE
+
+%AnalyzeCaptures(Board, Player, position(Column, Row), CustodialCaptures, StrengthCaptures)
+%Initially, CustodialCaptures = []
+analyzeCaptures(Board, Player, position(Column, Row),CustodialCaptures, StrengthCaptures) :-
+    analyzeNormalUpCapture(Board, Player, position(Column, Row), CaptureList),
+    analyzeNormalDownCapture(Board, Player, position(Column, Row), CaptureList2),
+    analyzeNormalLeftCapture(Board, Player, position(Column, Row), CaptureList3),
+    analyzeNormalRightCapture(Board, Player, position(Column, Row), CaptureList4),
+    append(CaptureList, CaptureList2, TempList),
+    append(TempList, CaptureList3, TempList2),
+    append(TempList2, CaptureList4, CustodialCaptures),
+
+    analyzeStrengthUpCapture(Board, Player, position(Column, Row), StrengthList),
+    analyzeStrengthDownCapture(Board, Player, position(Column, Row), StrengthList2),
+    analyzeStrengthLeftCapture(Board, Player, position(Column, Row), StrengthList3),
+    analyzeStrengthRightCapture(Board, Player, position(Column, Row), StrengthList4),
+    append(StrengthList, StrengthList2, TempStrengthList),
+    append(TempStrengthList, StrengthList3, TempStrengthList2),
+    append(TempStrengthList2, StrengthList4, StrengthCaptures).
+
+
+
+
+analyzeNormalUpCapture(Board, Player, position(Column, Row), [up]) :-
+    Row >= 2,
+    RowAbove is Row-1,
+    extract_element(Column, RowAbove, Board, Element),
+    is_element_capturable(Player, Element),
+    %Get element above the enemy
+    OtherRow is Row-2,
+    extract_element(Column, OtherRow, Board, Element1),
+    Element1 \= empty, 
+    \+is_element_capturable(Player, Element1).
+    
+
+analyzeNormalUpCapture(_Board, _Player, _position, []).
+
+analyzeNormalDownCapture(Board, Player, position(Column,Row), [down]) :-
+    Row =< 6,
+    RowBelow is Row+1,
+    extract_element(Column, RowBelow, Board, Element),
+    is_element_capturable(Player, Element),
+    %Get element below the enemy
+    OtherRow is Row+2,
+    extract_element(Column, OtherRow, Board, Element1),
+    Element1 \= empty, 
+    \+is_element_capturable(Player, Element1).
+
+analyzeNormalDownCapture(_Board, _Player, _position, []).
+
+
+
+
+
+
+analyzeNormalLeftCapture(Board, Player, position(Column, Row), [left]) :-
+    Column >= 2,
+    ColumnToTheLeft is Column-1,
+    extract_element(ColumnToTheLeft, Row, Board, Element),
+    is_element_capturable(Player, Element),
+    %Get element above the enemy
+    OtherColumn is Column-2,
+    extract_element(OtherColumn, Row, Board, Element1),
+    Element1 \= empty, 
+    \+is_element_capturable(Player, Element1).
+
+
+analyzeNormalLeftCapture(_Board, _Player, _position, []).
+
+
+analyzeNormalRightCapture(Board, Player, position(Column, Row), [right]) :-
+    Column =< 6,
+    ColumnToTheRight is Column+1,
+    extract_element(ColumnToTheRight, Row, Board, Element),
+    is_element_capturable(Player, Element),
+    %Get element below the enemy
+    OtherColumn is Column+2,
+    extract_element(OtherColumn, Row, Board, Element1),
+    Element1 \= empty, 
+    \+is_element_capturable(Player, Element1).
+
+analyzeNormalRightCapture(_Board, _Player, _position, []).
+
+
+
+
+%util - getPowerFromPiece
+
+getPowerFromPiece(white1, 1).
+getPowerFromPiece(white2, 2).
+getPowerFromPiece(white3, 3).
+getPowerFromPiece(white4, 4).
+getPowerFromPiece(white5, 5).
+
+getPowerFromPiece(black1, 1).
+getPowerFromPiece(black2, 2).
+getPowerFromPiece(black3, 3).
+getPowerFromPiece(black4, 4).
+getPowerFromPiece(black5, 5).
+
+
+decreasePowerFromPiece(white2, white1).
+decreasePowerFromPiece(white3, white2).
+decreasePowerFromPiece(white4, white3).
+decreasePowerFromPiece(white5, white4).
+
+decreasePowerFromPiece(black2, black1).
+decreasePowerFromPiece(black3, black2).
+decreasePowerFromPiece(black4, black3).
+decreasePowerFromPiece(black5, black4).
+
+
+
+analyzeStrengthUpCapture(Board, Player, position(Column, Row), [up]) :-
+    Row >= 1,
+    RowAbove is Row-1,
+    extract_element(Column, RowAbove, Board, Element),
+    is_element_capturable(Player, Element),
+    getPowerFromPiece(Element, EnemyPower),
+    extract_element(Column, Row, Board, MyPiece),
+    getPowerFromPiece(MyPiece, MyPower),
+    MyPower > EnemyPower.
+
+analyzeStrengthUpCapture(_Board, _Player, _position, []).
+
+analyzeStrengthDownCapture(Board, Player, position(Column, Row), [down]) :-
+    Row =< 7,
+    RowBelow is Row+1,
+    extract_element(Column, RowBelow, Board, Element),
+    is_element_capturable(Player, Element),
+    getPowerFromPiece(Element, EnemyPower),
+    extract_element(Column, Row, Board, MyPiece),
+    getPowerFromPiece(MyPiece, MyPower),
+    MyPower > EnemyPower.
+    
+
+analyzeStrengthDownCapture(_Board, _Player, _position, []).
+
+analyzeStrengthLeftCapture(Board, Player, position(Column, Row), [left]) :-
+    Column >= 1,
+    ColumnToTheLeft is Column-1,
+    extract_element(ColumnToTheLeft, Row, Board, Element),
+    is_element_capturable(Player, Element),
+    getPowerFromPiece(Element, EnemyPower),
+    extract_element(Column, Row, Board, MyPiece),
+    getPowerFromPiece(MyPiece, MyPower),
+    MyPower > EnemyPower.
+
+
+analyzeStrengthLeftCapture(_Board, _Player, _position, []).
+
+
+analyzeStrengthRightCapture(Board, Player, position(Column, Row), [right]) :-
+    Column =< 7,
+    ColumnToTheRight is Column+1,
+    extract_element(ColumnToTheRight, Row, Board, Element),
+    is_element_capturable(Player, Element),
+    getPowerFromPiece(Element, EnemyPower),
+    extract_element(Column, Row, Board, MyPiece),
+    getPowerFromPiece(MyPiece, MyPower),
+    MyPower > EnemyPower.
+    
+analyzeStrengthRightCapture(_Board, _Player, _position, []).
+
+
+%===================APPLY CAPTURES===========================================================
+
+%If there are no possible captures of any type, don't do anything
+applyCaptures(Board, _Player, _position, [], [], Board).
+
+%If there are no custodial captures but there is one strength capture available
+applyCaptures(Board, Player, position(Column, Row), [], StrengthCaptures, UpdatedBoard) :-
+    length(StrengthCaptures, N), 
+    N ==1, 
+    nth0(0, StrengthCaptures, CaptureDirection),
+    applyStrengthCapture(Board, Player, position(Column, Row), CaptureDirection, UpdatedBoard).
+
+%If there is 1 custodialCapture and 1 strengthCapture (its guaranteed they are both in the same direction)
+%Apply normal Capture
+applyCaptures(Board, Player, position(Column, Row), CustodialCaptures, StrengthCaptures, UpdatedBoard) :-
+    length(StrengthCaptures, N), 
+    N ==1, 
+    length(CustodialCaptures, C),
+    C ==1, 
+    nth0(0, CustodialCaptures, CaptureDirection),
+    applyNormalCapture(Board, Player, position(Column, Row), CaptureDirection, UpdatedBoard).
+
+%If there are no custodial captures but there are multiple strength captures available
+applyCaptures(Board, Player, position(Column, Row), [], StrengthCaptures, UpdatedBoard).
+
+%If there are custodial captures and multiple strength captures available
+%Will eventually have to ask user for input
+applyCaptures(Board, Player, position(Column, Row), CustodialCaptures, StrengthCaptures, UpdatedBoard).
+
+
+
+applyStrengthCapture(Board, Player, position(Column, Row), up, UpdatedBoard) :-
+    %Replace element above my position by 'empty'
+    NewRow is Row-1,
+    replaceElement(NewRow, Column, empty, Board, TempBoard),
+    %decrease my power by 1
+    extract_element(Column, Row, Board, Piece),
+    decreasePowerFromPiece(Piece, FinalPiece),
+    %Replace in board.
+    replaceElement(Row, Column, FinalPiece, TempBoard, UpdatedBoard).
+
+
+applyStrengthCapture(Board, Player, position(Column, Row), down, UpdatedBoard) :-
+    %Replace element below my position by 'empty'
+    NewRow is Row+1,
+    replaceElement(NewRow, Column, empty, Board, TempBoard),
+    %decrease my power by 1
+    extract_element(Column, Row, Board, Piece),
+    decreasePowerFromPiece(Piece, FinalPiece),
+    %Replace in board.
+    replaceElement(Row, Column, FinalPiece, TempBoard, UpdatedBoard).
+
+applyStrengthCapture(Board, Player, position(Column, Row), left, UpdatedBoard) :-
+    %Replace element to the left of my position by 'empty'
+    NewColumn is Column-1,
+    replaceElement(Row, NewColumn, empty, Board, TempBoard),
+    %decrease my power by 1
+    extract_element(Column, Row, Board, Piece),
+    decreasePowerFromPiece(Piece, FinalPiece),
+    %Replace in board.
+    replaceElement(Row, Column, FinalPiece, TempBoard, UpdatedBoard).
+
+applyStrengthCapture(Board, Player, position(Column, Row), right, UpdatedBoard) :-
+    %Replace element to the right of my position by 'empty'
+    NewColumn is Column+1,
+    replaceElement(Row, NewColumn, empty, Board, TempBoard),
+    %decrease my power by 1
+    extract_element(Column, Row, Board, Piece),
+    decreasePowerFromPiece(Piece, FinalPiece),
+    %Replace in board.
+    replaceElement(Row, Column, FinalPiece, TempBoard, UpdatedBoard).
+
+
+
+
+%No need to do any verification. At this point, simply apply the capture
+applyNormalCapture(Board, Player, position(Column, Row), up, UpdatedBoard) :-
+    RowAbove is Row-1,
+    replaceElement(RowAbove, Column, empty, Board, UpdatedBoard).
+
+applyNormalCapture(Board, Player, position(Column, Row), down, UpdatedBoard) :-
+    RowBelow is Row+1,
+    replaceElement(RowBelow, Column, empty, Board, UpdatedBoard).
+
+applyNormalCapture(Board, Player, position(Column, Row), left, UpdatedBoard) :-
+    LeftColumn is Column-1,
+    replaceElement(Row, LeftColumn, empty, Board, UpdatedBoard).
+
+applyNormalCapture(Board, Player, position(Column, Row), right, UpdatedBoard) :-
+    RightColumn is Column+1,
+    replaceElement(Row, RightColumn, empty, Board, UpdatedBoard).
