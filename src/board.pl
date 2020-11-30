@@ -3,7 +3,7 @@ testBoard( [
     [empty,empty,empty,empty,black4,empty,empty,empty,empty],
     [empty,empty,empty,empty,empty,empty,empty,empty,empty],
     [white2,white2,empty,empty,empty,empty,empty,empty,white3],
-    [cave_available,black3,empty,empty,cave_available,empty,empty,empty,cave_available],
+    [cave_available,empty,empty,empty,cave_available,empty,empty,empty,cave_available],
     [white3,empty,black2,empty,empty,empty,empty,empty, white3],
     [empty,white4,empty,empty,empty,empty,empty,empty,empty],
     [empty,white2,empty,empty,white4,empty,empty,empty,empty],

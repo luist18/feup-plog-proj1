@@ -31,13 +31,13 @@ spawn_left_dragon(Board, true-C2-C3, pieces_count(white-WhiteCount, black-BlackC
   (
       Player == white,
       NewWhiteCount is WhiteCount + 1,
-      NewPieceCount = piece_count(white-NewWhiteCount, black-BlackCount)
+      NewPieceCount = pieces_count(white-NewWhiteCount, black-BlackCount)
       ;
       NewBlackCount is BlackCount + 1,
-      NewPieceCount = piece_count(white-WhiteCount, black-NewBlackCount)
+      NewPieceCount = pieces_count(white-WhiteCount, black-NewBlackCount)
   ).
 
-spawn_left_dragon(Board, Caves, Pieces, Board, Caves, Pieces).
+spawn_left_dragon(Board, Caves, Pieces, Board, Caves, Pieces) :- !.
 
 spawn_right_dragon(Board, C1-C2-true, pieces_count(white-WhiteCount, black-BlackCount), NewBoard, NewCaves, NewPieceCount) :-
   state(Player, _, _, _),
@@ -53,10 +53,10 @@ spawn_right_dragon(Board, C1-C2-true, pieces_count(white-WhiteCount, black-Black
   (
       Player == white,
       NewWhiteCount is WhiteCount + 1,
-      NewPieceCount = piece_count(white-NewWhiteCount, black-BlackCount)
+      NewPieceCount = pieces_count(white-NewWhiteCount, black-BlackCount)
       ;
       NewBlackCount is BlackCount + 1,
-      NewPieceCount = piece_count(white-WhiteCount, black-NewBlackCount)
+      NewPieceCount = pieces_count(white-WhiteCount, black-NewBlackCount)
   ).
 
-spawn_right_dragon(Board, Caves, Pieces, Board, Caves, Pieces).
+spawn_right_dragon(Board, Caves, Pieces, Board, Caves, Pieces) :- !.

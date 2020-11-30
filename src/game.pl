@@ -43,44 +43,11 @@ player_turn(UpdatedBoard, NewCaves, NewPieceCount) :-
     make_move(From, To, Piece, MoveBoard),
     get_captures(MoveBoard, To, Captures),
     ask_capture(Captures, To, MoveBoard, CaptureBoard, PiecesCount, CapturePiecesCount),
-    spawn_dragons(CaptureBoard, Caves, PiecesCount, UpdatedBoard, NewCaves, NewPieceCount), !.
-    %set_empty_caves(From, DragonsBoard, UpdatedBoard).
-    %analyzeCaptures(TempBoard, Player, position(New_Column, New_Row), CustodialCaptures, StrengthCaptures),
-    %write('POWER CAPTURES: '), write(CustodialCaptures),nl,
-    %write('STRENGTH CAPTURES: '), write(StrengthCaptures),nl,
-    %applyCaptures(TempBoard, Player, position(New_Column, New_Row), CustodialCaptures, StrengthCaptures, TempBoard2), !,
+    spawn_dragons(CaptureBoard, Caves, CapturePiecesCount, DragonsBoard, NewCaves, NewPieceCount), !,
+    set_empty_caves(From, DragonsBoard, UpdatedBoard).
 
 decrease_pieces(white, pieces_count(white-Current, B), pieces_count(white-New, B)) :-
     New is Current - 1.
 
 decrease_pieces(black, pieces_count(A, black-Current), pieces_count(A, black-New)) :-
     New is Current - 1.
-
-ask_capture([], _, Board, Board, PiecesCount, PiecesCount) :- !.
-
-ask_capture(Captures, To, Board, CaptureBoard, PiecesCount, NewPiecesCount) :-
-    state(Player, _, _, _),
-    display_board(Board),
-    read_capture(Captures, Capture),
-    apply_capture(Player, Capture, To, Board, CaptureBoard), !,
-    decrease_pieces(Player, PiecesCount, NewPiecesCount), !.
-
-apply_capture(_, _-Row-Column-custodial, _, Board, CaptureBoard) :-
-    apply_custodial_capture(Row-Column, Board, CaptureBoard).
-
-apply_capture(Player, _-Row-Column-strength, To, Board, CaptureBoard) :-
-    apply_strength_capture(Player, Row-Column, To, Board, CaptureBoard).
-
-apply_custodial_capture(Capture, Board, CaptureBoard) :-
-    matrix_replace(Board, Capture, empty, CaptureBoard).
-
-apply_strength_capture(Player, Capture, To, Board, CaptureBoard) :-
-    get_element(Capture, Board, CaptureElement),
-    piece(CaptureElement, _, _, CaptureValue),
-    get_element(To, Board, ToElement),
-    piece(ToElement, _, _, Value),
-    Value > CaptureValue,
-    NewValue is Value - 1,
-    piece(NewPiece, _, Player, NewValue),
-    matrix_replace(Board, To, NewPiece, HelperBoard),
-    matrix_replace(HelperBoard, Capture, empty, CaptureBoard).

@@ -128,3 +128,37 @@ remove_strength_duplicates(CustodialCaptures, [_|T], TR) :-
   remove_strength_duplicates(CustodialCaptures, T, TR).
 
 remove_strength_duplicates(_, [], []).
+
+ask_capture([], _, Board, Board, PiecesCount, PiecesCount) :- !.
+
+ask_capture([Capture], To, Board, CaptureBoard, PiecesCount, NewPiecesCount) :-
+  state(Player, _, _, _),
+  apply_capture(Player, Capture, To, Board, CaptureBoard), !,
+  decrease_pieces(Player, PiecesCount, NewPiecesCount), !.
+
+ask_capture(Captures, To, Board, CaptureBoard, PiecesCount, NewPiecesCount) :-
+    state(Player, _, _, _),
+    display_board(Board),
+    read_capture(Captures, Capture),
+    apply_capture(Player, Capture, To, Board, CaptureBoard), !,
+    decrease_pieces(Player, PiecesCount, NewPiecesCount), !.
+
+apply_capture(_, _-Row-Column-custodial, _, Board, CaptureBoard) :-
+    apply_custodial_capture(Row-Column, Board, CaptureBoard).
+
+apply_capture(Player, _-Row-Column-strength, To, Board, CaptureBoard) :-
+    apply_strength_capture(Player, Row-Column, To, Board, CaptureBoard).
+
+apply_custodial_capture(Capture, Board, CaptureBoard) :-
+    matrix_replace(Board, Capture, empty, CaptureBoard).
+
+apply_strength_capture(Player, Capture, To, Board, CaptureBoard) :-
+    get_element(Capture, Board, CaptureElement),
+    piece(CaptureElement, _, _, CaptureValue),
+    get_element(To, Board, ToElement),
+    piece(ToElement, _, _, Value),
+    Value > CaptureValue,
+    NewValue is Value - 1,
+    piece(NewPiece, _, Player, NewValue),
+    matrix_replace(Board, To, NewPiece, HelperBoard),
+    matrix_replace(HelperBoard, Capture, empty, CaptureBoard).
