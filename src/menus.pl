@@ -30,5 +30,3 @@ credits :-
   write('= Luis Tavares                  ='), nl,
 	write('=                               ='), nl,
 	write('================================='), nl.
-  
-initial(GameState) :- initialBoard(GameState).

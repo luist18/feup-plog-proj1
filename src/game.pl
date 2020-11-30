@@ -34,6 +34,14 @@ game_over(state(_, _, _, PiecesCount), Winner) :-
     BlackCount =:= 1,
     Winner = white.
 
+value(State, white, Value) :-
+    state(_, _, _, pieces_count(white-WhiteCount, black-BlackCount)),
+    Value is WhiteCount - BlackCount.
+
+value(State, black, Value) :-
+    state(_, _, _, pieces_count(white-WhiteCount, black-BlackCount)),
+    Value is BlackCount - WhiteCount.
+
 show_result(Winner) :- 
     current_state(state(_, Board, _, _)),
     write('\33\[2J'),

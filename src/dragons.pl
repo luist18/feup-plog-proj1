@@ -63,7 +63,7 @@ spawn_right_dragon(Board, C1-C2-true, pieces_count(white-WhiteCount, black-Black
 spawn_right_dragon(Board, Caves, Pieces, Board, Caves, Pieces) :- !.
 
 spawn_middle_dragon(Board, C1-true-C3, pieces_count(white-WhiteCount, black-BlackCount), NewBoard, NewCaves, NewPieceCount) :-
-  state(Player, _, _, _),
+  current_state(state(Player, _, _, _)),
   get_element(3-4, Board, TopElement),
   get_element(5-4, Board, BottomElement),
   get_element(4-3, Board, LeftElement),

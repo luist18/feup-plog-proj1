@@ -5,6 +5,7 @@
 :- consult('movement.pl').
 :- consult('dragons.pl').
 :- consult('captures.pl').
+:- consult('bot.pl').
 :- consult('game.pl').
 :- use_module(library(lists)).
 :- use_module(library(random)).
