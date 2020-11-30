@@ -84,3 +84,19 @@ read_capture(Captures, Capture) :-
     raw_direction_to_direction(DirectionRaw, Direction),
     member(Direction-Row-Column-Type, Captures),
     Capture = Direction-Row-Column-Type.
+
+% Asks the user a move.
+%
+% ask_player_move(-From-To)
+ask_player_move(From-To) :-
+    repeat,
+        write('Select the piece to move...'), nl,
+        read_move(From),
+        write('Select the position to move...'), nl,
+        read_move(To),
+        (
+            validate_move(From, To)
+            ;
+            write('Invalid move!'), nl,
+            fail
+        ), !.

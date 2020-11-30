@@ -155,7 +155,7 @@ ask_capture(Captures, To, Board, CaptureBoard, PiecesCount, NewPiecesCount) :-
   write('Custodial Captures: '), write(CustodialCaptures), nl,
   write('Strength Captures: '), write(StrengthCaptures), nl,
   (
-    length(StrengthCaptures, 0) , applyCustodialCaptures(CustodialCaptures, To, Board, CaptureBoard, PiecesCount, NewPiecesCount)
+    length(StrengthCaptures, 0) , apply_custodial_captures(CustodialCaptures, To, Board, CaptureBoard, PiecesCount, NewPiecesCount)
     ;
     repeat,
     read_char('Please choose one (c - custodial, s - strength)\n', Input),
@@ -181,7 +181,7 @@ apply_custodial_captures([H|T], To, Board, NewBoard, PiecesCount, NewPiecesCount
   current_state(state(Player, _,_,_)),
   apply_capture(Player, H, To, Board, UpdatedBoard),
   decrease_pieces(Player, PiecesCount, SecondPiecesCount),
-  applyCustodialCaptures(T, _, UpdatedBoard, NewBoard, SecondPiecesCount, NewPiecesCount ).
+  apply_custodial_captures(T, _, UpdatedBoard, NewBoard, SecondPiecesCount, NewPiecesCount).
 
 apply_capture(_, _-Row-Column-custodial, _, Board, CaptureBoard) :-
     apply_custodial_capture(Row-Column, Board, CaptureBoard).

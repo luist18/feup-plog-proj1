@@ -34,15 +34,15 @@ move(State, From/To, NewGameState) :-
   state(Player, Board, available_caves(Caves), PiecesCount) = State,
   get_element(From, Board, Piece),
   make_move(Board, From, To, Piece, MoveBoard),
-  get_captures(MoveBoard, To, Captures),
+  get_captures(Player, MoveBoard, To, Captures),
   bot_capture(Player, Captures, To, MoveBoard, CaptureBoard, PiecesCount, CapturePiecesCount),
   spawn_dragons(CaptureBoard, Caves, CapturePiecesCount, DragonsBoard, NewCaves, NewPieceCount), !,
   set_empty_caves(From, DragonsBoard, UpdatedBoard),
   NewGameState = state(Player, UpdatedBoard, available_caves(NewCaves), NewPieceCount).
 
 bot_capture(Player, Captures, To, MoveBoard, CaptureBoard, PiecesCount, CapturePiecesCount) :-
-  findall(R-C, (member(_-R-C-custodial, Captures)), CustodialCaptures),
-  findall(R-C, (member(_-R-C-strength, Captures)), StrengthCaptures),
+  findall(D-R-C-custodial, (member(D-R-C-custodial, Captures)), CustodialCaptures),
+  findall(D-R-C, (member(D-R-C-strength, Captures)), StrengthCaptures),
   length(CustodialCaptures, CustodialLength),
   length(StrengthCaptures, StrengthLength),
   (
@@ -61,3 +61,17 @@ bot_capture(Player, Captures, To, MoveBoard, CaptureBoard, PiecesCount, CaptureP
 choose_move(State, Player, easy, Move) :-
   valid_moves(State, Player, Moves),
   random_member(Move, Moves).
+
+choose_move(State, Player, normal, Move) :-
+  valid_moves(State, Player, ValidMoves),
+  choose_normal_move_helper(State, Player, ValidMoves, NormalMoves),
+  sort(NormalMoves, SortedMoves),
+  reverse(SortedMoves, Moves),
+  nth0(0, Moves, _/Move).
+
+choose_normal_move_helper(State, Player, [Move|T], [Value/Move|TR]) :-
+  move(State, Move, NewGameState),
+  value(NewGameState, Player, Value),
+  choose_normal_move_helper(State, Player, T, TR).
+
+choose_normal_move_helper(_, _, [], []).

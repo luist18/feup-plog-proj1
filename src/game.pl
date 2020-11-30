@@ -1,6 +1,6 @@
 initial(State) :-
     initial_board(InitialBoard),
-    State = state(white, InitialBoard, available_caves(true-true-true), pieces_count(white-2, black-5)).
+    State = state(white, InitialBoard, available_caves(true-true-true), pieces_count(white-8, black-8)).
 
 game_loop(GameMode) :-
     retractall(current_state(state(_, _, _, _))),
@@ -16,6 +16,9 @@ game_loop(GameMode) :-
             ;
             GameMode == player_vs_easy_bot,
             player_vs_easy_bot(NextBoard, NewCaves, NewPieceCount)
+            ;
+            GameMode == player_vs_normal_bot,
+            player_vs_normal_bot(NextBoard, NewCaves, NewPieceCount)
         ),
         next_player(NextPlayer),
         retract(current_state(state(Player, Board, Caves, PiecesCount))),
@@ -99,19 +102,24 @@ player_vs_easy_bot(UpdatedBoard, NewCaves, NewPieceCount) :-
         move(CurrentState, Move, state(_, UpdatedBoard, NewCaves, NewPieceCount))
     ).
 
-ask_player_move(From-To) :-
-    repeat,
-        write('Select the piece to move...'), nl,
-        read_move(From),
-        write('Select the position to move...'), nl,
-        read_move(To),
-        (
-            validate_move(From, To)
-            ;
-            write('Invalid move!'), nl,
-            fail
-        ), !.
-
-player_vs_normal_bot.
+player_vs_normal_bot(UpdatedBoard, NewCaves, NewPieceCount) :-
+    current_state(CurrentState),
+    state(Player, Board, available_caves(Caves), PiecesCount) = CurrentState,
+    pieces_count(PlayerPiecesWhite, PlayerPiecesBlack) = PiecesCount,
+    nl, format('Player: ~w', [Player]), nl,
+    format('Player pieces: ~w, ~w', [PlayerPiecesWhite, PlayerPiecesBlack]), nl, nl,
+    (
+        Player == white,
+        ask_player_move(From-To),
+        get_element(From, Board, Piece),
+        make_move(Board, From, To, Piece, MoveBoard),
+        get_captures(Player, MoveBoard, To, Captures),
+        ask_capture(Captures, To, MoveBoard, CaptureBoard, PiecesCount, CapturePiecesCount),
+        spawn_dragons(CaptureBoard, Caves, CapturePiecesCount, DragonsBoard, NewCaves, NewPieceCount), !,
+        set_empty_caves(From, DragonsBoard, UpdatedBoard)
+        ;
+        choose_move(CurrentState, Player, normal, Move),
+        move(CurrentState, Move, state(_, UpdatedBoard, NewCaves, NewPieceCount))
+    ).
 
 bot_vs_bot.

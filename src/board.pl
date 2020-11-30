@@ -25,7 +25,7 @@ initial_board( [
 % Represents a piece of the board.
 %
 % piece(Name, TextRepresentation, Player, Value).
-piece(empty, '    ', none, 0).
+piece(empty, '    ', empty, 0).
 piece(black1, ' B1 ', black, 1).
 piece(black2, ' B2 ', black, 2).
 piece(black3, ' B3 ', black, 3).
