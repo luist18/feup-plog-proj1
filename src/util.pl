@@ -72,3 +72,8 @@ clear_move(black) :-
     clear.
 
 clear_move(white).
+
+% Sets a new seed.
+init_random_state :-
+    now(X),
+    setrand(X).

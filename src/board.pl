@@ -10,9 +10,9 @@ testBoard( [
     [mountain,white2,white2,white2,white2,white2,white2,white3,mountain]
 ]).
 
-initial_board( [
+initial_board([
     [mountain,black3,black2,black2,black2,black2,black2,black3,mountain],
-    [empty,empty,empty,empty,black4,empty,empty,empty,empty],
+    [empty,white3,empty,black2,black4,empty,empty,empty,empty],
     [empty,empty,empty,empty,empty,empty,empty,empty,empty],
     [empty,empty,empty,empty,empty,empty,empty,empty,empty],
     [cave_available,empty,empty,empty,cave_available,empty,empty,empty,cave_available],
@@ -21,6 +21,8 @@ initial_board( [
     [empty,empty,empty,empty,white4,empty,empty,empty,empty],
     [mountain,white3,white2,white2,white2,white2,white2,white3,mountain]
 ]).
+
+
 
 % Represents a piece of the board.
 %

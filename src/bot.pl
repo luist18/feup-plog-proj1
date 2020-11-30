@@ -50,8 +50,8 @@ bot_capture(Player, Captures, To, MoveBoard, CaptureBoard, PiecesCount, CaptureP
     apply_custodial_captures(CustodialCaptures, To, MoveBoard, CaptureBoard, PiecesCount, CapturePiecesCount)
     ;
     StrengthLength > 0,
-    random_member(Capture, StrengthCaptures),
-    apply_strength_capture(Player, Capture, To, MoveBoard, CaptureBoard),
+    random_member(_-R-C, StrengthCaptures),
+    apply_strength_capture(Player, R-C, To, MoveBoard, CaptureBoard),
     decrease_pieces(Player, PiecesCount, CapturePiecesCount)
     ;
     CaptureBoard = MoveBoard,
@@ -59,15 +59,19 @@ bot_capture(Player, Captures, To, MoveBoard, CaptureBoard, PiecesCount, CaptureP
   ).
 
 choose_move(State, Player, easy, Move) :-
+  init_random_state,
   valid_moves(State, Player, Moves),
   random_member(Move, Moves).
 
 choose_move(State, Player, normal, Move) :-
+  init_random_state,
   valid_moves(State, Player, ValidMoves),
   choose_normal_move_helper(State, Player, ValidMoves, NormalMoves),
   sort(NormalMoves, SortedMoves),
   reverse(SortedMoves, Moves),
-  nth0(0, Moves, _/Move).
+  nth0(0, Moves, Value/_),
+  repeat,
+  random_member(Value/Move, Moves), !.
 
 choose_normal_move_helper(State, Player, [Move|T], [Value/Move|TR]) :-
   move(State, Move, NewGameState),

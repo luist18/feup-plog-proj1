@@ -19,6 +19,9 @@ game_loop(GameMode) :-
             ;
             GameMode == player_vs_normal_bot,
             player_vs_normal_bot(NextBoard, NewCaves, NewPieceCount)
+            ;
+            GameMode == bot_vs_bot,
+            bot_vs_bot(NextBoard, NewCaves, NewPieceCount)
         ),
         next_player(NextPlayer),
         retract(current_state(state(Player, Board, Caves, PiecesCount))),
@@ -122,4 +125,11 @@ player_vs_normal_bot(UpdatedBoard, NewCaves, NewPieceCount) :-
         move(CurrentState, Move, state(_, UpdatedBoard, NewCaves, NewPieceCount))
     ).
 
-bot_vs_bot.
+bot_vs_bot(UpdatedBoard, NewCaves, NewPieceCount) :-
+    current_state(CurrentState),
+    state(Player, _, _, PiecesCount) = CurrentState,
+    pieces_count(PlayerPiecesWhite, PlayerPiecesBlack) = PiecesCount,
+    nl, format('Player: ~w', [Player]), nl,
+    format('Player pieces: ~w, ~w', [PlayerPiecesWhite, PlayerPiecesBlack]), nl, nl,
+    choose_move(CurrentState, Player, normal, Move),
+    move(CurrentState, Move, state(_, UpdatedBoard, NewCaves, NewPieceCount)).
