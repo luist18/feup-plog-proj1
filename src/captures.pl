@@ -157,6 +157,8 @@ ask_capture(Captures, To, Board, CaptureBoard, PiecesCount, NewPiecesCount) :-
   (
     length(StrengthCaptures, 0) , apply_custodial_captures(CustodialCaptures, To, Board, CaptureBoard, PiecesCount, NewPiecesCount)
     ;
+    length(CustodialCaptures, 0), apply_strength_captures(StrengthCaptures, To, Board, CaptureBoard, PiecesCount, NewPiecesCount)
+    ;
     repeat,
     read_char('Please choose one (c - custodial, s - strength)\n', Input),
       (
@@ -164,7 +166,7 @@ ask_capture(Captures, To, Board, CaptureBoard, PiecesCount, NewPiecesCount) :-
         apply_custodial_captures(CustodialCaptures, To, Board, CaptureBoard, PiecesCount, NewPiecesCount)
         ; 
         Input == 's',
-        ask_capture(StrengthCaptures, To, Board, CaptureBoard, PiecesCount, NewPiecesCount)
+        apply_strength_captures(StrengthCaptures, To, Board, CaptureBoard, PiecesCount, NewPiecesCount)
       ), !
   ).
 
@@ -183,6 +185,13 @@ apply_custodial_captures([H|T], To, Board, NewBoard, PiecesCount, NewPiecesCount
   decrease_pieces(Player, PiecesCount, SecondPiecesCount),
   apply_custodial_captures(T, _, UpdatedBoard, NewBoard, SecondPiecesCount, NewPiecesCount).
 
+apply_strength_captures(Captures, To, Board, NewBoard, PiecesCount, NewPiecesCount) :-
+  read_capture(Captures, Capture),
+  current_state(state(Player,_,_,_)),
+  decrease_pieces(Player, PiecesCount, NewPiecesCount),
+  apply_capture(Player, Capture, To, Board, NewBoard ).
+
+
 apply_capture(_, _-Row-Column-custodial, _, Board, CaptureBoard) :-
     apply_custodial_capture(Row-Column, Board, CaptureBoard).
 
@@ -193,6 +202,7 @@ apply_custodial_capture(Capture, Board, CaptureBoard) :-
     matrix_replace(Board, Capture, empty, CaptureBoard).
 
 apply_strength_capture(Player, Capture, To, Board, CaptureBoard) :-
+
     get_element(Capture, Board, CaptureElement),
     piece(CaptureElement, _, _, CaptureValue),
     get_element(To, Board, ToElement),
