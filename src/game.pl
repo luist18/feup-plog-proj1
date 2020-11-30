@@ -1,33 +1,49 @@
+initial(State) :-
+    initial_board(InitialBoard),
+    State = state(white, InitialBoard, available_caves(true-true-true), pieces_count(white-8, black-8)).
+
 game_loop :-
-    retractall(state(_, _, _, _)),
-    testBoard(InitialBoard),
-    assert(state(white, InitialBoard, available_caves(true-true-true), pieces_count(white-8, black-8))),
+    retractall(current_state(state(_, _, _, _))),
+    initial(InitialState),
+    assert(current_state(InitialState)),
     repeat,
-        state(Player, Board, Caves, PiecesCount),
-        %write('\33\[2J'),
+        current_state(state(Player, Board, Caves, PiecesCount)),
+        write('\33\[2J'),
         display_board(Board),
         player_turn(NextBoard, NewCaves, NewPieceCount),
         next_player(NextPlayer),
-        retract(state(Player, Board, Caves, PiecesCount)),
-        assert(state(NextPlayer, NextBoard, available_caves(NewCaves), NewPieceCount)),
-        end_of_game(2), !,
-    show_result.
+        retract(current_state(state(Player, Board, Caves, PiecesCount))),
+        assert(current_state(state(NextPlayer, NextBoard, available_caves(NewCaves), NewPieceCount))),
+        current_state(CurrentState),
+        game_over(CurrentState, Winner), !,
+    show_result(Winner).
 
 next_player(Player) :-
-    state(white, _, _, _),
+    current_state(state(white, _, _, _)),
     Player = black, !.
 
 next_player(white) :- !.
 
-end_of_game(N) :-
-    N > 10, write('End game'), nl.
+game_over(state(_, _, _, PiecesCount), Winner) :-
+    pieces_count(white-WhiteCount, _) = PiecesCount,
+    WhiteCount =:= 1,
+    Winner = black.
 
-show_result :- 
-    nl, write('GAME FINISHED').
+game_over(state(_, _, _, PiecesCount), Winner) :-
+    pieces_count(_, black-BlackCount) = PiecesCount,
+    BlackCount =:= 1,
+    Winner = white.
+
+show_result(Winner) :- 
+    current_state(state(_, Board, _, _)),
+    write('\33\[2J'),
+    display_board(Board),
+    nl,
+    format('The player with the ~w pieces has won!', [Winner]).
 
 player_turn(UpdatedBoard, NewCaves, NewPieceCount) :-
-    state(Player, Board, available_caves(Caves), PiecesCount),
-    write('Player: '), write(Player), nl,
+    current_state(state(Player, Board, available_caves(Caves), PiecesCount)),
+    nl, format('Player: ~w', [Player]), nl, nl,
     repeat,
         write('Select the piece to move...'), nl,
         read_move(From),

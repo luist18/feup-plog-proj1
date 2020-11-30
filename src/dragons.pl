@@ -18,7 +18,7 @@ spawn_dragons(Board, Caves, PiecesCount, NewBoard, NewCaves, NewPieceCount) :-
   spawn_right_dragon(LeftBoard, LeftCaves, LeftPieceCount, NewBoard, NewCaves, NewPieceCount).
 
 spawn_left_dragon(Board, true-C2-C3, pieces_count(white-WhiteCount, black-BlackCount), NewBoard, NewCaves, NewPieceCount) :-
-  state(Player, _, _, _),
+  current_state(state(Player, _, _, _)),
   get_element(3-0, Board, TopElement),
   get_element(5-0, Board, BottomElement),
   get_element(4-1, Board, RightElement),
@@ -40,7 +40,7 @@ spawn_left_dragon(Board, true-C2-C3, pieces_count(white-WhiteCount, black-BlackC
 spawn_left_dragon(Board, Caves, Pieces, Board, Caves, Pieces) :- !.
 
 spawn_right_dragon(Board, C1-C2-true, pieces_count(white-WhiteCount, black-BlackCount), NewBoard, NewCaves, NewPieceCount) :-
-  state(Player, _, _, _),
+  current_state(state(Player, _, _, _)),
   get_element(3-8, Board, TopElement),
   get_element(5-8, Board, BottomElement),
   get_element(4-7, Board, LeftElement),

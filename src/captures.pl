@@ -5,7 +5,7 @@ get_captures(MoveBoard, To, Captures) :-
   append(CustodialCaptures, NewStrengthCaptures, Captures).
 
 get_custodial_captures(Board, To, CustodialCaptures) :-
-  state(Player, _, _, _),
+  current_state(state(Player, _, _, _)),
   get_custodial_captures_up(Player, Board, To, UpCaptures), !,
   get_custodial_captures_down(Player, Board, To, DownCaptures), !,
   get_custodial_captures_left(Player, Board, To, LeftCaptures), !,
@@ -63,7 +63,7 @@ get_custodial_captures_right(Player, Board, Row-Column, [r-Row-Column1-custodial
 get_custodial_captures_right(_, _, _, []) :- !.
 
 get_strength_captures(Board, To, Captures) :-
-  state(Player, _, _, _),
+  current_state(state(Player, _, _, _)),
   get_strength_captures_up(Player, Board, To, UpCaptures), !,
   get_strength_captures_down(Player, Board, To, DownCaptures), !,
   get_strength_captures_left(Player, Board, To, LeftCaptures), !,
@@ -132,16 +132,18 @@ remove_strength_duplicates(_, [], []).
 ask_capture([], _, Board, Board, PiecesCount, PiecesCount) :- !.
 
 ask_capture([Capture], To, Board, CaptureBoard, PiecesCount, NewPiecesCount) :-
-  state(Player, _, _, _),
+  current_state(state(Player, _, _, _)),
   apply_capture(Player, Capture, To, Board, CaptureBoard), !,
-  decrease_pieces(Player, PiecesCount, NewPiecesCount), !.
+  next_player(Oponent),
+  decrease_pieces(Oponent, PiecesCount, NewPiecesCount), !.
 
 ask_capture(Captures, To, Board, CaptureBoard, PiecesCount, NewPiecesCount) :-
-    state(Player, _, _, _),
+    current_state(state(Player, _, _, _)),
     display_board(Board),
     read_capture(Captures, Capture),
     apply_capture(Player, Capture, To, Board, CaptureBoard), !,
-    decrease_pieces(Player, PiecesCount, NewPiecesCount), !.
+    next_player(Oponent),
+    decrease_pieces(Oponent, PiecesCount, NewPiecesCount), !.
 
 apply_capture(_, _-Row-Column-custodial, _, Board, CaptureBoard) :-
     apply_custodial_capture(Row-Column, Board, CaptureBoard).

@@ -9,6 +9,6 @@
 :- use_module(library(lists)).
 :- use_module(library(random)).
 
-:- dynamic(state/4).
+:- dynamic(current_state/1).
 
 play :- main_menu.

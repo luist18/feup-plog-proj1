@@ -10,7 +10,7 @@ testBoard( [
     [mountain,white2,white2,white2,white2,white2,white2,white3,mountain]
 ]).
 
-initialBoard( [
+initial_board( [
     [mountain,black3,black2,black2,black2,black2,black2,black3,mountain],
     [empty,empty,empty,empty,black4,empty,empty,empty,empty],
     [empty,empty,empty,empty,empty,empty,empty,empty,empty],
