@@ -60,3 +60,27 @@ read_column(Message, Position) :-
 read_move(Row-Column) :-
     read_row('Next move row: ', Row), !,
     read_column('Next move column: ', Column), !.
+
+% Checks whether a direction is valid or not.
+%
+% not_valid_direction(+Direction)
+not_valid_direction(Direction) :-
+    Direction \= 'u',
+    Direction \= 'd',
+    Direction \= 'l',
+    Direction \= 'r'.
+
+raw_direction_to_direction('u', u).
+raw_direction_to_direction('d', d).
+raw_direction_to_direction('l', l).
+raw_direction_to_direction('r', r).
+
+% Reads capture.
+%
+% read_capture(+Captures, -Capture)
+read_capture(Captures, Capture) :-
+    read_char('Select capture direction (u - up, d - down, l - left, r - right): ', Direction),
+    \+not_valid_direction(DirectionRaw),
+    raw_direction_to_direction(DirectionRaw, Direction),
+    member(Direction-Row-Column-Type, Captures),
+    Capture = Direction-Row-Column-Type.

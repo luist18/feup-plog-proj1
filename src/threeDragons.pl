@@ -3,6 +3,8 @@
 :- consult('board.pl').
 :- consult('input.pl').
 :- consult('movement.pl').
+:- consult('dragons.pl').
+:- consult('captures.pl').
 :- consult('game.pl').
 :- use_module(library(lists)).
 :- use_module(library(random)).

@@ -13,18 +13,12 @@ set_empty_caves(From, Board, NewBoard) :-
 
 set_empty_caves(_, Board, Board).
 
-spawn_dragons(Board, NewBoard, NewCaves, NewPieceCount) :-
-  spawn_left_dragon(Board, NewBoard, NewCaves, NewPieceCount).
+spawn_dragons(Board, Caves, PiecesCount, NewBoard, NewCaves, NewPieceCount) :-
+  spawn_left_dragon(Board, Caves, PiecesCount, LeftBoard, LeftCaves, LeftPieceCount),
+  spawn_right_dragon(LeftBoard, LeftCaves, LeftPieceCount, NewBoard, NewCaves, NewPieceCount).
 
-spawn_dragons(NewBoard, NewBoard, NewCaves, NewPieceCount) :- 
-  state(_, _, available_caves(NewCaves), NewPieceCount).
-
-spawn_left_dragon(Board, NewBoard, false-C2-C3, NewPieceCount) :-
-  state(_, _, available_caves(false-C2-C3), NewPieceCount),
-  NewBoard = Board.
-
-spawn_left_dragon(Board, NewBoard, NewCaves, NewPieceCount) :-
-  state(Player, _, available_caves(_-C2-C3), pieces_count(white-WhiteCount, black-BlackCount)),
+spawn_left_dragon(Board, true-C2-C3, pieces_count(white-WhiteCount, black-BlackCount), NewBoard, NewCaves, NewPieceCount) :-
+  state(Player, _, _, _),
   get_element(3-0, Board, TopElement),
   get_element(5-0, Board, BottomElement),
   get_element(4-1, Board, RightElement),
@@ -43,5 +37,26 @@ spawn_left_dragon(Board, NewBoard, NewCaves, NewPieceCount) :-
       NewPieceCount = piece_count(white-WhiteCount, black-NewBlackCount)
   ).
 
-spawn_left_dragon(NewBoard, NewBoard, NewCaves, NewPieceCount) :- 
-  state(_, _, available_caves(NewCaves), NewPieceCount).
+spawn_left_dragon(Board, Caves, Pieces, Board, Caves, Pieces).
+
+spawn_right_dragon(Board, C1-C2-true, pieces_count(white-WhiteCount, black-BlackCount), NewBoard, NewCaves, NewPieceCount) :-
+  state(Player, _, _, _),
+  get_element(3-8, Board, TopElement),
+  get_element(5-8, Board, BottomElement),
+  get_element(4-7, Board, LeftElement),
+  piece(TopElement, _, Player, _),
+  piece(BottomElement, _, Player, _),
+  piece(LeftElement, _, Player, _),
+  piece(CaveElement, _, Player, 3),
+  matrix_replace(Board, 4-8, CaveElement, NewBoard),
+  NewCaves = C1-C2-true,
+  (
+      Player == white,
+      NewWhiteCount is WhiteCount + 1,
+      NewPieceCount = piece_count(white-NewWhiteCount, black-BlackCount)
+      ;
+      NewBlackCount is BlackCount + 1,
+      NewPieceCount = piece_count(white-WhiteCount, black-NewBlackCount)
+  ).
+
+spawn_right_dragon(Board, Caves, Pieces, Board, Caves, Pieces).
