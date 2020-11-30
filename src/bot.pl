@@ -15,13 +15,13 @@ valid_move_to(State, Board, Player, From, Row-Column) :-
   move_no_jumping(State, From, Row-Column).
 
 findall_valid_moves_to(State, Board, Player, From, Moves) :-
-  findall(From-To, valid_move_to(State, Board, Player, From, To), Moves).
-  
+  findall(From/To, valid_move_to(State, Board, Player, From, To), Moves).
+
 valid_moves_helper(_, _, _, [], []).
 
 valid_moves_helper(State, Board, Player, [H|T], List) :-
   findall_valid_moves_to(State, Board, Player, H, Moves),
-  valid_moves_helper(Board, Player, T, List2),
+  valid_moves_helper(State, Board, Player, T, List2),
   append(List2, Moves, UnsortedList),
   sort(UnsortedList, List).
 
@@ -30,26 +30,34 @@ valid_moves(State, Player, List) :-
   findall_player_pieces(Board, Player, Pieces),
   valid_moves_helper(State, Board, Player, Pieces, List).
 
-%==========================================================================================
+move(State, From/To, NewGameState) :-
+  state(Player, Board, available_caves(Caves), PiecesCount) = State,
+  get_element(From, Board, Piece),
+  make_move(Board, From, To, Piece, MoveBoard),
+  get_captures(MoveBoard, To, Captures),
+  bot_capture(Player, Captures, To, MoveBoard, CaptureBoard, PiecesCount, CapturePiecesCount),
+  spawn_dragons(CaptureBoard, Caves, CapturePiecesCount, DragonsBoard, NewCaves, NewPieceCount), !,
+  set_empty_caves(From, DragonsBoard, UpdatedBoard),
+  NewGameState = state(Player, UpdatedBoard, available_caves(NewCaves), NewPieceCount).
 
-incrementPos(IRow,ICol,CRow,CCol):- 
-    CRow is IRow, 
-    CCol is ICol.
+bot_capture(Player, Captures, To, MoveBoard, CaptureBoard, PiecesCount, CapturePiecesCount) :-
+  findall(R-C, (member(_-R-C-custodial, Captures)), CustodialCaptures),
+  findall(R-C, (member(_-R-C-strength, Captures)), StrengthCaptures),
+  length(CustodialCaptures, CustodialLength),
+  length(StrengthCaptures, StrengthLength),
+  (
+    CustodialLength >= 1,
+    apply_custodial_captures(CustodialCaptures, To, MoveBoard, CaptureBoard, PiecesCount, CapturePiecesCount)
+    ;
+    StrengthLength > 0,
+    random_member(Capture, StrengthCaptures),
+    apply_strength_capture(Player, Capture, To, MoveBoard, CaptureBoard),
+    decrease_pieces(Player, PiecesCount, CapturePiecesCount)
+    ;
+    CaptureBoard = MoveBoard,
+    CapturePiecesCount = PiecesCount
+  ).
 
-incrementPos(IRow,ICol,CRow,CCol):-
-    ICol < 8,
-    IRow < 9,
-    NewICol is ICol + 1,
-    incrementPos(IRow,NewICol,CRow,CCol).
-
-incrementPos(IRow,ICol,CRow,CCol):-
-    ICol >= 8,
-    IRow < 8,
-    NewICol is 0,
-    NewIRow is IRow + 1,
-    incrementPos(NewIRow,NewICol,CRow,CCol).
-
-valid_movesV2(state(Player,Board,_,_), _Player, ListOfMoves) :-
-  
-  findall([OldRow-OldColumn, NewRow-NewColumn],  (incrementPos(0,0,OldRow,OldColumn), incrementPos(0,0,NewRow,NewColumn), validate_move(OldRow-OldColumn, NewRow-NewColumn)) , ListOfMoves).
-
+choose_move(State, Player, easy, Move) :-
+  valid_moves(State, Player, Moves),
+  random_member(Move, Moves).

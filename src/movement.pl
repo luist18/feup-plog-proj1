@@ -1,5 +1,4 @@
-make_move(From, To, Element, UpdatedBoard) :-
-  current_state(state(_, Board, _, _)),
+make_move(Board, From, To, Element, UpdatedBoard) :-
   matrix_replace(Board, From, empty, TmpBoard),
   matrix_replace(TmpBoard, To, Element, UpdatedBoard).
 

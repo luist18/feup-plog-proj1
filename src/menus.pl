@@ -33,8 +33,8 @@ play_option :-
   read_char('Choose an option: ', Input),
 	play_menu_option(Input).
 
-play_menu_option('1') :- game_loop.
-play_menu_option('2') :- player_vs_easy_bot. /* TODO */
+play_menu_option('1') :- game_loop(player_vs_player).
+play_menu_option('2') :- game_loop(player_vs_easy_bot).
 play_menu_option('3'). /* TODO */
 play_menu_option(_) :- write('Wrong input received. Please try again!'), nl,main_menu.
 

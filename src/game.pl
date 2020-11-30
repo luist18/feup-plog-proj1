@@ -1,16 +1,22 @@
 initial(State) :-
     initial_board(InitialBoard),
-    State = state(white, InitialBoard, available_caves(true-true-true), pieces_count(white-8, black-8)).
+    State = state(white, InitialBoard, available_caves(true-true-true), pieces_count(white-2, black-5)).
 
-game_loop :-
+game_loop(GameMode) :-
     retractall(current_state(state(_, _, _, _))),
     initial(InitialState),
     assert(current_state(InitialState)),
     repeat,
         current_state(state(Player, Board, Caves, PiecesCount)),
-        write('\33\[2J'),
+        clear_move(Player),
         display_board(Board),
-        player_turn(NextBoard, NewCaves, NewPieceCount),
+        (
+            GameMode == player_vs_player,
+            player_vs_player(NextBoard, NewCaves, NewPieceCount)
+            ;
+            GameMode == player_vs_easy_bot,
+            player_vs_easy_bot(NextBoard, NewCaves, NewPieceCount)
+        ),
         next_player(NextPlayer),
         retract(current_state(state(Player, Board, Caves, PiecesCount))),
         assert(current_state(state(NextPlayer, NextBoard, available_caves(NewCaves), NewPieceCount))),
@@ -35,11 +41,11 @@ game_over(state(_, _, _, PiecesCount), Winner) :-
     Winner = white.
 
 value(State, white, Value) :-
-    state(_, _, _, pieces_count(white-WhiteCount, black-BlackCount)),
+    state(_, _, _, pieces_count(white-WhiteCount, black-BlackCount)) = State,
     Value is WhiteCount - BlackCount.
 
 value(State, black, Value) :-
-    state(_, _, _, pieces_count(white-WhiteCount, black-BlackCount)),
+    state(_, _, _, pieces_count(white-WhiteCount, black-BlackCount)) = State,
     Value is BlackCount - WhiteCount.
 
 show_result(Winner) :- 
@@ -49,9 +55,12 @@ show_result(Winner) :-
     nl,
     format('The player with the ~w pieces has won!', [Winner]).
 
-player_turn(UpdatedBoard, NewCaves, NewPieceCount) :-
-    current_state(state(Player, Board, available_caves(Caves), PiecesCount)),
-    nl, format('Player: ~w', [Player]), nl, nl,
+player_vs_player(UpdatedBoard, NewCaves, NewPieceCount) :-
+    current_state(CurrentState),
+    state(Player, Board, available_caves(Caves), PiecesCount) = CurrentState,
+    pieces_count(PlayerPiecesWhite, PlayerPiecesBlack) = PiecesCount,
+    nl, format('Player: ~w', [Player]), nl,
+    format('Player pieces: ~w, ~w', [PlayerPiecesWhite, PlayerPiecesBlack]), nl, nl,
     repeat,
         write('Select the piece to move...'), nl,
         read_move(From),
@@ -64,24 +73,45 @@ player_turn(UpdatedBoard, NewCaves, NewPieceCount) :-
             fail
         ), !,
     get_element(From, Board, Piece),
-    make_move(From, To, Piece, MoveBoard),
-    get_captures(MoveBoard, To, Captures),
+    make_move(Board, From, To, Piece, MoveBoard),
+    get_captures(Player, MoveBoard, To, Captures),
     ask_capture(Captures, To, MoveBoard, CaptureBoard, PiecesCount, CapturePiecesCount),
     spawn_dragons(CaptureBoard, Caves, CapturePiecesCount, DragonsBoard, NewCaves, NewPieceCount), !,
     set_empty_caves(From, DragonsBoard, UpdatedBoard).
-    
 
+player_vs_easy_bot(UpdatedBoard, NewCaves, NewPieceCount) :-
+    current_state(CurrentState),
+    state(Player, Board, available_caves(Caves), PiecesCount) = CurrentState,
+    pieces_count(PlayerPiecesWhite, PlayerPiecesBlack) = PiecesCount,
+    nl, format('Player: ~w', [Player]), nl,
+    format('Player pieces: ~w, ~w', [PlayerPiecesWhite, PlayerPiecesBlack]), nl, nl,
+    (
+        Player == white,
+        ask_player_move(From-To),
+        get_element(From, Board, Piece),
+        make_move(Board, From, To, Piece, MoveBoard),
+        get_captures(Player, MoveBoard, To, Captures),
+        ask_capture(Captures, To, MoveBoard, CaptureBoard, PiecesCount, CapturePiecesCount),
+        spawn_dragons(CaptureBoard, Caves, CapturePiecesCount, DragonsBoard, NewCaves, NewPieceCount), !,
+        set_empty_caves(From, DragonsBoard, UpdatedBoard)
+        ;
+        choose_move(CurrentState, Player, easy, Move),
+        move(CurrentState, Move, state(_, UpdatedBoard, NewCaves, NewPieceCount))
+    ).
 
+ask_player_move(From-To) :-
+    repeat,
+        write('Select the piece to move...'), nl,
+        read_move(From),
+        write('Select the position to move...'), nl,
+        read_move(To),
+        (
+            validate_move(From, To)
+            ;
+            write('Invalid move!'), nl,
+            fail
+        ), !.
 
+player_vs_normal_bot.
 
-decrease_pieces(white, pieces_count(white-Current, B), pieces_count(white-New, B)) :-
-    New is Current - 1.
-
-decrease_pieces(black, pieces_count(A, black-Current), pieces_count(A, black-New)) :-
-    New is Current - 1.
-
-
-
-%======================================================================
-
-player_vs_easy_bot. 
+bot_vs_bot.

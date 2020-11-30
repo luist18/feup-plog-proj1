@@ -61,9 +61,14 @@ natnum(N) :-
     N is N0 + 1.
 
 gen(A, B) :-
-    natnum(N),
-    range(0, N, B),
-    A is N - B.
+    range(0, 8, A),
+    range(0, 8, B).
 
 % Clears the console.
 clear :- write('\33\[2J').
+
+% Clear player move
+clear_move(black) :-
+    clear.
+
+clear_move(white).
