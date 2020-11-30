@@ -36,20 +36,32 @@ next_player(Player) :-
 
 next_player(white) :- !.
 
+% Checks if a game is over.
+%
+% game_over(+State, -Winner)
 game_over(state(_, _, _, PiecesCount), Winner) :-
     pieces_count(white-WhiteCount, _) = PiecesCount,
     WhiteCount =:= 1,
     Winner = black.
 
+% Checks if a game is over.
+%
+% game_over(+State, -Winner)
 game_over(state(_, _, _, PiecesCount), Winner) :-
     pieces_count(_, black-BlackCount) = PiecesCount,
     BlackCount =:= 1,
     Winner = white.
 
+% Computes the value of a player.
+%
+% value(+State, +Player, -Value)
 value(State, white, Value) :-
     state(_, _, _, pieces_count(white-WhiteCount, black-BlackCount)) = State,
     Value is WhiteCount - BlackCount.
 
+% Computes the value of a player.
+%
+% value(+State, +Player, -Value)
 value(State, black, Value) :-
     state(_, _, _, pieces_count(white-WhiteCount, black-BlackCount)) = State,
     Value is BlackCount - WhiteCount.
