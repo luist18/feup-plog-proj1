@@ -29,3 +29,27 @@ valid_moves(State, Player, List) :-
   state(_, Board, _, _) = State,
   findall_player_pieces(Board, Player, Pieces),
   valid_moves_helper(State, Board, Player, Pieces, List).
+
+%==========================================================================================
+
+incrementPos(IRow,ICol,CRow,CCol):- 
+    CRow is IRow, 
+    CCol is ICol.
+
+incrementPos(IRow,ICol,CRow,CCol):-
+    ICol < 8,
+    IRow < 9,
+    NewICol is ICol + 1,
+    incrementPos(IRow,NewICol,CRow,CCol).
+
+incrementPos(IRow,ICol,CRow,CCol):-
+    ICol >= 8,
+    IRow < 8,
+    NewICol is 0,
+    NewIRow is IRow + 1,
+    incrementPos(NewIRow,NewICol,CRow,CCol).
+
+valid_movesV2(state(Player,Board,_,_), _Player, ListOfMoves) :-
+  
+  findall([OldRow-OldColumn, NewRow-NewColumn],  (incrementPos(0,0,OldRow,OldColumn), incrementPos(0,0,NewRow,NewColumn), validate_move(OldRow-OldColumn, NewRow-NewColumn)) , ListOfMoves).
+

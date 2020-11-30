@@ -69,9 +69,19 @@ player_turn(UpdatedBoard, NewCaves, NewPieceCount) :-
     ask_capture(Captures, To, MoveBoard, CaptureBoard, PiecesCount, CapturePiecesCount),
     spawn_dragons(CaptureBoard, Caves, CapturePiecesCount, DragonsBoard, NewCaves, NewPieceCount), !,
     set_empty_caves(From, DragonsBoard, UpdatedBoard).
+    
+
+
+
 
 decrease_pieces(white, pieces_count(white-Current, B), pieces_count(white-New, B)) :-
     New is Current - 1.
 
 decrease_pieces(black, pieces_count(A, black-Current), pieces_count(A, black-New)) :-
     New is Current - 1.
+
+
+
+%======================================================================
+
+player_vs_easy_bot. 
