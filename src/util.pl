@@ -51,6 +51,7 @@ convert_char_to_int('G', 7).
 convert_char_to_int('H', 8).
 convert_char_to_int('I', 9).
 
+% Util functions to generate a pair of numbers.
 range(Min, _, Min).
 range(Min, Max, Val) :- NewMin is Min+1, Max >= NewMin, range(NewMin, Max, Val).
 
@@ -59,7 +60,10 @@ natnum(N) :-
     natnum(N0),
     N is N0 + 1.
 
-gen(A,B) :-
+gen(A, B) :-
     natnum(N),
     range(0, N, B),
     A is N - B.
+
+% Clears the console.
+clear :- write('\33\[2J').
