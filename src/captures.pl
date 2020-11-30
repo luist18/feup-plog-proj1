@@ -1,9 +1,15 @@
+% Gets the captures of a player.
+%
+% get_captures(+Player, +MoveBoard, +To, -Captures)
 get_captures(Player, MoveBoard, To, Captures) :-
   get_custodial_captures(Player, MoveBoard, To, CustodialCaptures),
   get_strength_captures(Player, MoveBoard, To, StrengthCaptures),
   remove_strength_duplicates(CustodialCaptures, StrengthCaptures, NewStrengthCaptures), !,
   append(CustodialCaptures, NewStrengthCaptures, Captures).
 
+% Gets the custodial captures of a player.
+%
+% get_custodial_captures(+Player, +Board, +To, -CustodialCaptures)
 get_custodial_captures(Player, Board, To, CustodialCaptures) :-
   get_custodial_captures_up(Player, Board, To, UpCaptures), !,
   get_custodial_captures_down(Player, Board, To, DownCaptures), !,
@@ -13,6 +19,9 @@ get_custodial_captures(Player, Board, To, CustodialCaptures) :-
   append(LeftCaptures, RightCaptures, HorizontalCaptures),
   append(VerticalCaptures, HorizontalCaptures, CustodialCaptures).
  
+% Gets the up custodial captures of a player
+%
+% get_custodial_captures_up(+Player, +Board, +To, -CustodialCaptures)
 get_custodial_captures_up(Player, Board, Row-Column, [u-Row1-Column-custodial]) :- 
   Row >= 2,
   next_player(OppositePlayer),
@@ -28,6 +37,9 @@ get_custodial_captures_up(Player, Board, Row-Column, [u-Row1-Column-custodial]) 
 
 get_custodial_captures_up(_, _, _, []) :- !.
 
+% Gets the down custodial captures of a player
+%
+% get_custodial_captures_down(+Player, +Board, +To, -CustodialCaptures)
 get_custodial_captures_down(Player, Board, Row-Column, [d-Row1-Column-custodial]) :- 
   Row =< 6,
   next_player(OppositePlayer),
@@ -43,6 +55,9 @@ get_custodial_captures_down(Player, Board, Row-Column, [d-Row1-Column-custodial]
 
 get_custodial_captures_down(_, _, _, []) :- !.
 
+% Gets the left custodial captures of a player
+%
+% get_custodial_captures_left(+Player, +Board, +To, -CustodialCaptures)
 get_custodial_captures_left(Player, Board, Row-Column, [l-Row-Column1-custodial]) :- 
   Column >= 2,
   next_player(OppositePlayer),
@@ -58,6 +73,9 @@ get_custodial_captures_left(Player, Board, Row-Column, [l-Row-Column1-custodial]
 
 get_custodial_captures_left(_, _, _, []) :- !.
 
+% Gets the right custodial captures of a player
+%
+% get_custodial_captures_right(+Player, +Board, +To, -CustodialCaptures)
 get_custodial_captures_right(Player, Board, Row-Column, [r-Row-Column1-custodial]) :- 
   Column =< 6,
   next_player(OppositePlayer),
@@ -73,6 +91,9 @@ get_custodial_captures_right(Player, Board, Row-Column, [r-Row-Column1-custodial
 
 get_custodial_captures_right(_, _, _, []) :- !.
 
+% Gets the strength captures of a player
+%
+% get_strength_captures(+Player, +Board, +To, -StrengthCaptures)
 get_strength_captures(Player, Board, To, Captures) :-
   get_strength_captures_up(Player, Board, To, UpCaptures), !,
   get_strength_captures_down(Player, Board, To, DownCaptures), !,
@@ -82,6 +103,9 @@ get_strength_captures(Player, Board, To, Captures) :-
   append(LeftCaptures, RightCaptures, HorizontalCaptures),
   append(VerticalCaptures, HorizontalCaptures, Captures).
 
+% Gets the up strength captures of a player
+%
+% get_strength_captures_up(+Player, +Board, +To, -StrengthCaptures)
 get_strength_captures_up(Player, Board, Row-Column, [u-Row1-Column-strength]) :-
   Row >= 1,
   next_player(OppositePlayer),
@@ -94,6 +118,9 @@ get_strength_captures_up(Player, Board, Row-Column, [u-Row1-Column-strength]) :-
 
 get_strength_captures_up(_, _, _, []).
 
+% Gets the down strength captures of a player
+%
+% get_strength_captures_down(+Player, +Board, +To, -StrengthCaptures)
 get_strength_captures_down(Player, Board, Row-Column, [d-Row1-Column-strength]) :-
   Row =< 7,
   next_player(OppositePlayer),
@@ -106,6 +133,9 @@ get_strength_captures_down(Player, Board, Row-Column, [d-Row1-Column-strength]) 
 
 get_strength_captures_down(_, _, _, []).
 
+% Gets the left strength captures of a player
+%
+% get_strength_captures_left(+Player, +Board, +To, -StrengthCaptures)
 get_strength_captures_left(Player, Board, Row-Column, [l-Row-Column1-strength]) :-
   Column >= 1,
   next_player(OppositePlayer),
@@ -118,6 +148,9 @@ get_strength_captures_left(Player, Board, Row-Column, [l-Row-Column1-strength]) 
 
 get_strength_captures_left(_, _, _, []).
 
+% Gets the right strength captures of a player
+%
+% get_strength_captures_right(+Player, +Board, +To, -StrengthCaptures)
 get_strength_captures_right(Player, Board, Row-Column, [r-Row-Column1-strength]) :-
   Column =< 7,
   next_player(OppositePlayer),
@@ -130,10 +163,16 @@ get_strength_captures_right(Player, Board, Row-Column, [r-Row-Column1-strength])
 
 get_strength_captures_right(_, _, _, []).
 
+% Removes the duplicate custodial and strength captures.
+%
+% remove_strength_duplicates(+CustodialCaptures, +StrengthCaptures, -Captures)
 remove_strength_duplicates(CustodialCaptures, [Direction-Row-Column-Type|T], [Direction-Row-Column-Type|TR]) :-
   \+member(Direction-_-_-_, CustodialCaptures),
   remove_strength_duplicates(CustodialCaptures, T, TR).
 
+% Removes the duplicate custodial and strength captures.
+%
+% remove_strength_duplicates(+CustodialCaptures, +StrengthCaptures, -Captures)
 remove_strength_duplicates(CustodialCaptures, [_|T], TR) :-
   remove_strength_duplicates(CustodialCaptures, T, TR).
 
@@ -141,11 +180,17 @@ remove_strength_duplicates(_, [], []).
 
 ask_capture([], _, Board, Board, PiecesCount, PiecesCount) :- !.
 
+% Asks the player to perform a capture.
+%
+% ask_capture(+Captures, +To, +Board, -CaptureBoard, +PiecesCount, -NewPiecesCount)
 ask_capture([Capture], To, Board, CaptureBoard, PiecesCount, NewPiecesCount) :-
   current_state(state(Player, _, _, _)),
   apply_capture(Player, Capture, To, Board, CaptureBoard), !,
   decrease_pieces(Player, PiecesCount, NewPiecesCount), !.
 
+% Asks the player to perform a capture.
+%
+% ask_capture(+Captures, +To, +Board, -CaptureBoard, +PiecesCount, -NewPiecesCount)
 ask_capture(Captures, To, Board, CaptureBoard, PiecesCount, NewPiecesCount) :-
   findall(X-A-B-Y, (member(X-A-B-Y, Captures), Y==custodial), CustodialCaptures),
   findall(X1-A1-B1-Y1, (member(X1-A1-B1-Y1, Captures), Y1==strength), StrengthCaptures),
@@ -170,6 +215,9 @@ ask_capture(Captures, To, Board, CaptureBoard, PiecesCount, NewPiecesCount) :-
       ), !
   ).
 
+% Asks the player to perform a capture.
+%
+% ask_capture(+Captures, +To, +Board, -CaptureBoard, +PiecesCount, -NewPiecesCount)
 ask_capture(Captures, To, Board, CaptureBoard, PiecesCount, NewPiecesCount) :-
   current_state(state(Player, _, _, _)),
   display_board(Board),
@@ -213,8 +261,14 @@ apply_strength_capture(Player, Capture, To, Board, CaptureBoard) :-
     matrix_replace(Board, To, NewPiece, HelperBoard),
     matrix_replace(HelperBoard, Capture, empty, CaptureBoard).
 
+% Descreases the pieces of the opposite player
+%
+% decrease_pieces(+Player, +PiecesCount, -NewPiecesCount)
 decrease_pieces(black, pieces_count(white-Current, B), pieces_count(white-New, B)) :-
     New is Current - 1.
 
+% Descreases the pieces of the opposite player
+%
+% decrease_pieces(+Player, +PiecesCount, -NewPiecesCount)
 decrease_pieces(white, pieces_count(A, black-Current), pieces_count(A, black-New)) :-
     New is Current - 1.

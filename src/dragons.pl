@@ -1,23 +1,40 @@
-
+% Sets the caves empty after a move from it.
+%
+% set_emtpy_caves(+From, +Board, -NewBoard)
 set_empty_caves(From, Board, NewBoard) :-
   From == 4-0,
   matrix_replace(Board, From, cave_empty, NewBoard).
 
+% Sets the caves empty after a move from it.
+%
+% set_emtpy_caves(+From, +Board, -NewBoard)
 set_empty_caves(From, Board, NewBoard) :-
   From == 4-4,
   matrix_replace(Board, From, cave_empty, NewBoard).
 
+% Sets the caves empty after a move from it.
+%
+% set_emtpy_caves(+From, +Board, -NewBoard)
 set_empty_caves(From, Board, NewBoard) :-
   From == 4-8,
   matrix_replace(Board, From, cave_empty, NewBoard).
 
+% Sets the caves empty after a move from it.
+%
+% set_emtpy_caves(+From, +Board, -NewBoard)
 set_empty_caves(_, Board, Board).
 
+% Spawns the dragons.
+%
+% spawn_dragons(+Board, +Caves, +PiecesCount, -NewBoard, -NewCaves, -NewPieceCount)
 spawn_dragons(Board, Caves, PiecesCount, NewBoard, NewCaves, NewPieceCount) :-
   spawn_left_dragon(Board, Caves, PiecesCount, LeftBoard, LeftCaves, LeftPieceCount),
   spawn_right_dragon(LeftBoard, LeftCaves, LeftPieceCount, RightBoard, RightCaves, RightPieceCount),
   spawn_middle_dragon(RightBoard, RightCaves, RightPieceCount, NewBoard, NewCaves, NewPieceCount).
 
+% Spawns a single dragon.
+%
+% spawn_left_dragon(+Board, +Caves, +PiecesCount, -NewBoard, -NewCaves, -NewPieceCount)
 spawn_left_dragon(Board, true-C2-C3, pieces_count(white-WhiteCount, black-BlackCount), NewBoard, NewCaves, NewPieceCount) :-
   current_state(state(Player, _, _, _)),
   get_element(3-0, Board, TopElement),
@@ -38,8 +55,14 @@ spawn_left_dragon(Board, true-C2-C3, pieces_count(white-WhiteCount, black-BlackC
       NewPieceCount = pieces_count(white-WhiteCount, black-NewBlackCount)
   ).
 
+% Spawns a single dragon.
+%
+% spawn_left_dragon(+Board, +Caves, +PiecesCount, -NewBoard, -NewCaves, -NewPieceCount)
 spawn_left_dragon(Board, Caves, Pieces, Board, Caves, Pieces) :- !.
 
+% Spawns a single dragon.
+%
+% spawn_right_dragon(+Board, +Caves, +PiecesCount, -NewBoard, -NewCaves, -NewPieceCount)
 spawn_right_dragon(Board, C1-C2-true, pieces_count(white-WhiteCount, black-BlackCount), NewBoard, NewCaves, NewPieceCount) :-
   current_state(state(Player, _, _, _)),
   get_element(3-8, Board, TopElement),
@@ -60,8 +83,14 @@ spawn_right_dragon(Board, C1-C2-true, pieces_count(white-WhiteCount, black-Black
       NewPieceCount = pieces_count(white-WhiteCount, black-NewBlackCount)
   ).
 
+% Spawns a single dragon.
+%
+% spawn_right_dragon(+Board, +Caves, +PiecesCount, -NewBoard, -NewCaves, -NewPieceCount)
 spawn_right_dragon(Board, Caves, Pieces, Board, Caves, Pieces) :- !.
 
+% Spawns a single dragon.
+%
+% spawn_middle_dragon(+Board, +Caves, +PiecesCount, -NewBoard, -NewCaves, -NewPieceCount)
 spawn_middle_dragon(Board, C1-true-C3, pieces_count(white-WhiteCount, black-BlackCount), NewBoard, NewCaves, NewPieceCount) :-
   current_state(state(Player, _, _, _)),
   get_element(3-4, Board, TopElement),
@@ -84,4 +113,7 @@ spawn_middle_dragon(Board, C1-true-C3, pieces_count(white-WhiteCount, black-Blac
       NewPieceCount = pieces_count(white-WhiteCount, black-NewBlackCount)
   ).
 
+% Spawns a single dragon.
+%
+% spawn_middle_dragon(+Board, +Caves, +PiecesCount, -NewBoard, -NewCaves, -NewPieceCount)
 spawn_middle_dragon(Board, Caves, Pieces, Board, Caves, Pieces) :- !.
